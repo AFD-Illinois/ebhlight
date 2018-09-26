@@ -32,7 +32,6 @@ hostname = None
 port     = None
 username = None
 
-SHORT_TEST = True
 ERROR_THRESHOLD = 0.01
 
 #os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -43,17 +42,6 @@ logfile = open(LOGNAME, "w")
 def print2(str):
   print(str)
   logfile.write(str + '\n')
-
-# GET ALL TEST SCRIPTS
-SKIP = ['generate_all_plots.py','test_auto.py']
-if SHORT_TEST:
-  TESTS = ['sod.py', 'brem.py', 'thermalization.py', 'thermalization_mpi.py', 
-           'comptonization.py']
-else:
-  TESTS = glob.glob('*.py')
-  for test in SKIP:
-    if test in TESTS:
-      TESTS.remove(test)
 
 TESTS = ['bhtherm.py', 'bondi.py', 'brem.py', 'brem_mpi.py', 'kshocks.py', 
          'mhdmodes1d.py', 'sod.py', 'sod_mpi.py', 'thermalization.py',
