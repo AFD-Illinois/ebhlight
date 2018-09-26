@@ -104,18 +104,12 @@ elif mode == 'rad':
   fig = plt.figure(figsize=(10,10))
 
   ax = fig.add_subplot(4,2,1)
-  #ax.plot(diag['t'], -np.array(diag['Mdot'])/diag['hdr']['MdotEdd'])
-  #ax.plot(diag['t'], diag['step_lost_all']-diag['step_abs_all']-diag['step_rec_all'])
-  #ax.plot(diag['t'], diag['step_rec_all'])
-  #ax.plot(diag['t'], diag['step_lost_all'] - diag['step_abs_all'])
-  #ax.plot(diag['t'], diag['step_lost_all'] - diag['step_abs_all'] - diag['step_rec_all'])
-  ax.plot(diag['t'], diag['lum_super'])
+  ax.plot(diag['t'], -np.array(diag['Mdot'])/diag['hdr']['MdotEdd'])
   ax.set_yscale('log')
   ax.set_ylabel('mdot')
 
   ax = fig.add_subplot(4,2,2)
-  #ax.plot(diag['t'], np.array(diag['Lum'])/diag['hdr']['LEdd'])
-  ax.plot(diag['t'], np.array(diag['lum']))
+  ax.plot(diag['t'], np.array(diag['Lum'])/diag['hdr']['LEdd'])
   ax.set_yscale('log')
   ax.set_ylabel('L/LEdd')
 
