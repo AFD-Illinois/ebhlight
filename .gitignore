@@ -1,0 +1,67 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Python
+*.pyc
+
+# Vim
+*.swp
+
+# Images
+*.png
+*.mp4
+*.gif
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+bhlight
+
+# Output files
+dumps
+restarts
+generate_all_plots.txt
+test_all.txt
+*.out
+*.err
+hotcross.dat
+
+# Build system
+TMP
+SRC
+build
+log_run
+log_build
+run.py
+param_template.dat
+
+# SLURM
+out_*
+err_*
+
+# Debug files
+*.dSYM/
+*.su

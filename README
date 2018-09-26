@@ -1,0 +1,138 @@
+
+ BHLIGHT: GENERAL RELATIVISTIC RADIATION MAGNETOHYDRODYNAMICS WITH MONTE CARLO
+                                   TRANSPORT
+
+This software is based on
+
+  Ryan, B. R., Dolence, J. C., & Gammie, C. F. 2015, ApJ, 807:31
+
+As described in the LICENSE, all academic work derived from this software should
+reference this publication.
+
+Subsequent major contributors:
+  Sean Ressler
+  Jonah Miller
+
+Questions, comments, and bug reports should be sent by email to Ben Ryan at
+brryan@lanl.gov.
+
+------------------------------- NUMERICAL SCHEME -------------------------------
+
+BHLIGHT solves the equations of general relativistic radiation
+magnetohydrodynamics in stationary spacetimes. Fluid integration is performed
+with a second order shock-capturing scheme (HARM; Gammie, McKinney & Toth 2003).
+Frequency-dependent radiation transport is performed with a second order Monte
+Carlo scheme (GRMONTY; Dolence et al. 2009). Fluid and radiation exchange four-
+momentum in an explicit first-order operator-split fashion.
+
+The algorithm in this version of the code contains alterations from the scheme
+originally published in Ryan et al. 2015:
+  - 3D: The fluid sector no longer assumes symmetry in the X^3 coordinate.
+  - Hamiltonian geodesic transport: Originally, the geodesic equation was solved
+      in the form
+        d X^{\mu} / d \lambda = K^{\mu}
+        d K^{\mu} / d \lambda = \Gamma^{\mu}_{\nu \lambda} K^{\nu} K^{\lambda}.
+      This ignores the conservation of K_{\mu} when the metric is symmetric in 
+      X^{\mu}. To take advantage of this fact, and to avoid inconsistencies 
+      between \lambda and the simulation coordinate time t, we solve the 
+      geodesic equation in an alternative form:
+        d X^{\mu} / d t = K^{\mu} / K^{0}
+        d K_{\mu} / d t = -1/(2 g^{0 \nu} k_{\nu}) k_b k_c (d g^{bc} / dx^{\mu})
+  - Variable superphoton timesteps: Originally, all superphoton geodesics were
+      updated according to the shortest light crossing time for all simulation
+      zones, times a Courant factor. Now, superphoton geodesic updates are
+      performed only when required by the light crossing time for the zone each
+      superphoton is currently in. An interpolation between current and previous
+      X^{\mu} and K^{\mu} to the current fluid time t is performed to process
+      interactions for all superphotons each fluid timestep to second order
+      spatial accuracy.
+
+--------------------------------- DEPENDENCIES ---------------------------------
+
+BHLIGHT is written in C99. It requires the following libraries:
+  - GSL
+  - MPI
+  - Parallel HDF5
+
+Configuration and analysis scripts are written in Python 3.6, and use
+matplotlib, numpy, and h5py.
+
+Scripts are provided in bhlight/scripts for downloading and installing 
+dependencies automatically. Default compilers will be used unless provided as a 
+command line option, e.g.
+
+  $ python install_gsl.py /usr/bin/gcc
+
+These scripts are only tested on an incomplete set of flavors of LINUX. 
+
+If using gcc, version 4.9 or later is recommended. 
+
+--------------------------------- CONFIGURATION --------------------------------
+
+A custom build script is used for each problem to:
+  - Set compile-time code parameters
+  - Set machine-specific dependency locations
+  - Collect copies of all required source files
+  - Write a problem-specific makefile
+  - Call make to compile the source and create an executable
+  - Clean up temporary files
+
+To run, for example, the Sod shocktube problem:
+ $ cd bhlight/prob/sod
+ $ python build.py
+ $ ./bhlight
+
+------------------------------------- I/O --------------------------------------
+
+File input and output are performed with HDF5. In the active output directory,
+dumps/ and restarts/ folders are created, holding dump and restart output,
+respectively. Output directories may be specified at runtime by passing the flag
+
+  -o /path/to/output/directory/
+
+to the executable.
+
+------------------------------- AUTOMATIC TESTING ------------------------------
+
+Scripts are provided for automatically running and analyzing certain test
+problems.
+
+To run, for example, the Sod shocktube test:
+ $ cd bhlight/test/auto
+ $ python sod.py
+which will produce 'sod.png' in the current directory, showing the numerical and
+analytic solutions.
+
+------------------------------ RUNTIME PARAMETERS ------------------------------
+
+Runtime parameters are read in from a (required) parameters file passed to the 
+executable as '-p path/to/parameter/file'. A default param.dat file is generated
+alongside the executable by the build routine. Note that this build routine 
+overwrites param.dat each time it is called -- if you wish to preserve your 
+runtime parameters, change the filename from param.dat. 
+
+Problem-specific runtime parameters are also available. Each problem.c file 
+contains a routine void set_problem_params(). To include a problem parameter
+"test" (here a double, but 'int' and 'string' are also allowed) accessible from 
+the parameter file, there are three steps:
+
+1) Define your variable in problem.c in file scope (internal linkage 
+recommended)
+
+2) Call the parameter read function inside set_problem_params()
+
+After these steps you should have
+
+  static double test;
+  void set_problem_params()
+  {
+    set_param("test", &test);
+  }
+
+3) Use the problem's build.py script to request your new variable as a runtime
+parameter, with the line
+
+  bhl.config.set_rparm('test', 'double', default = 100)
+
+The 'default' parameter is optional.
+
