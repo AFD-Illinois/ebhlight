@@ -847,9 +847,9 @@ void dump()
   H5Fflush(file_id, H5F_SCOPE_GLOBAL);
   H5Fclose(file_id);
 
-  if (mpi_io_proc()) {
-    write_xml_file(dump_id, t, vnams);
-  }
+  //if (mpi_io_proc()) {
+  //  write_xml_file(dump_id, t, vnams);
+  //}
 
   dump_id++;
   fdump_id++;
