@@ -160,7 +160,7 @@ def load_hdr(fname):
 
   return hdr
 
-def load_geom(hdr, recalc=True, use_3d_metrics=True):
+def load_geom(hdr, recalc=True, use_3d_metrics=True, full=False):
   import numpy as np
   import h5py
   import os
@@ -169,6 +169,9 @@ def load_geom(hdr, recalc=True, use_3d_metrics=True):
   dfile = h5py.File(os.path.join(hdr['PATH'], 'grid.h5'), 'r')
 
   geom = {}
+  
+  geom['full'] = full
+  
   geom['gcov'] = np.array(dfile['gcov'])
   geom['gcon'] = np.array(dfile['gcon'])
   geom['gdet'] = np.array(dfile['gdet'])
@@ -187,16 +190,17 @@ def load_geom(hdr, recalc=True, use_3d_metrics=True):
   geom['y'] = np.array(dfile['Xcart'][:,:,:,2])
   geom['z'] = np.array(dfile['Xcart'][:,:,:,3])
 
-  #geom['X1f'] = np.array(dfile['XFharm'][:,:,:,1])
-  #geom['X2f'] = np.array(dfile['XFharm'][:,:,:,2])
-  #geom['X3f'] = np.array(dfile['XFharm'][:,:,:,3])
+  if full:
+    geom['X1f'] = np.array(dfile['XFharm'][:,:,:,1])
+    geom['X2f'] = np.array(dfile['XFharm'][:,:,:,2])
+    geom['X3f'] = np.array(dfile['XFharm'][:,:,:,3])
 
-  #geom['xf'] = np.array(dfile['XFcart'][:,:,:,1])
-  #geom['yf'] = np.array(dfile['XFcart'][:,:,:,2])
-  #geom['zf'] = np.array(dfile['XFcart'][:,:,:,3])
+    geom['xf'] = np.array(dfile['XFcart'][:,:,:,1])
+    geom['yf'] = np.array(dfile['XFcart'][:,:,:,2])
+    geom['zf'] = np.array(dfile['XFcart'][:,:,:,3])
 
-  #geom['Lambda_h2cart_con'] = np.array(dfile['Lambda_h2cart_con'])
-  #geom['Lambda_h2cart_cov'] = np.array(dfile['Lambda_h2cart_cov'])
+    geom['Lambda_h2cart_con'] = np.array(dfile['Lambda_h2cart_con'])
+    geom['Lambda_h2cart_cov'] = np.array(dfile['Lambda_h2cart_cov'])
 
   if hdr['METRIC'] in ['MKS', 'MMKS']:
     geom['r'] = np.array(dfile['Xbl'][:,:,:,1])
@@ -207,13 +211,14 @@ def load_geom(hdr, recalc=True, use_3d_metrics=True):
     geom['rcyl'] = geom['r']*np.sin(geom['th'])
     geom['rcyl'][:,0,:] = 0.
     geom['rcyl'][:,-1,:] = 0.
-    #geom['Lambda_h2bl_con'] = np.array(dfile['Lambda_h2bl_con'])
-    #geom['Lambda_h2bl_cov'] = np.array(dfile['Lambda_h2bl_cov'])
-    #geom['Lambda_bl2cart_con'] = np.array(dfile['Lambda_bl2cart_con'])
-    #geom['Lambda_bl2cart_cov'] = np.array(dfile['Lambda_bl2cart_cov'])
-    #if use_2d_metrics:
-    #  geom['Lambda_h2bl_con'] = geom['Lambda_h2bl_con'][:,:,0]
-    #  geom['Lambda_h2bl_cov'] = geom['Lambda_h2bl_cov'][:,:,0]
+    if full:
+      geom['Lambda_h2bl_con'] = np.array(dfile['Lambda_h2bl_con'])
+      geom['Lambda_h2bl_cov'] = np.array(dfile['Lambda_h2bl_cov'])
+      geom['Lambda_bl2cart_con'] = np.array(dfile['Lambda_bl2cart_con'])
+      geom['Lambda_bl2cart_cov'] = np.array(dfile['Lambda_bl2cart_cov'])
+      if use_2d_metrics:
+        geom['Lambda_h2bl_con'] = geom['Lambda_h2bl_con'][:,:,0]
+        geom['Lambda_h2bl_cov'] = geom['Lambda_h2bl_cov'][:,:,0]
 
   dfile.close()
 
@@ -322,16 +327,17 @@ def load_dump(fname, geom=None):
     dump['ur'] = np.clip(dump['ur'], SMALL, None)
     dump['betar'] = dump['PRESS']/(1./3.*dump['ur'][:,:,:])
 
-  #if hdr['METRIC'] in ['MKS', 'MMKS']:
-  #  dump['ucon_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_con'], dump['ucon'])
-  #  dump['ucov_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_cov'], dump['ucov'], transpose=True)
-  #  dump['bcon_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_con'], dump['bcon'])
-  #  dump['bcov_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_con'], dump['bcov'], transpose=True)
+  if geom['full']:
+    if hdr['METRIC'] in ['MKS', 'MMKS']:
+      dump['ucon_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_con'], dump['ucon'])
+      dump['ucov_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_cov'], dump['ucov'], transpose=True)
+      dump['bcon_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_con'], dump['bcon'])
+      dump['bcov_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_con'], dump['bcov'], transpose=True)
 
-  #dump['ucon_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_con'], dump['ucon'])
-  #dump['ucov_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_cov'], dump['ucov'], transpose=True)
-  #dump['bcon_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_con'], dump['bcon'])
-  #dump['bcov_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_con'], dump['bcov'], transpose=True)
+    dump['ucon_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_con'], dump['ucon'])
+    dump['ucov_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_cov'], dump['ucov'], transpose=True)
+    dump['bcon_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_con'], dump['bcon'])
+    dump['bcov_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_con'], dump['bcov'], transpose=True)
 
   dfile.close()
 
