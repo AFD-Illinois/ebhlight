@@ -57,14 +57,6 @@ BHLIGHT is written in C99. It requires the following libraries:
 Configuration and analysis scripts are written in Python 3.6, and use
 matplotlib, numpy, and h5py.
 
-Scripts are provided in bhlight/scripts for downloading and installing 
-dependencies automatically. Default compilers will be used unless provided as a 
-command line option, e.g.
-
-  $ python install_gsl.py /usr/bin/gcc
-
-These scripts are only tested on an incomplete set of flavors of LINUX. 
-
 If using gcc, version 4.9 or later is recommended. 
 
 --------------------------------- CONFIGURATION --------------------------------
