@@ -1007,7 +1007,7 @@ void restart_write(int restart_type)
 
     WRITE_GRID(Nsc, "Nsc", TYPE_INT);
       
-    WRITE_GRID(Esuper, "Esuper", TYPE_FLOAT);
+    WRITE_GRID(Esuper, "Esuper", TYPE_DBL);
     
     WRITE_GRID(Nsuper, "Nsuper", TYPE_INT);
 
@@ -1220,7 +1220,7 @@ void restart_read(char *fname)
 
     READ_GRID(Nsc, TYPE_INT);
       
-    READ_GRID(Esuper, TYPE_FLOAT);
+    READ_GRID(Esuper, TYPE_DBL);
     
     READ_GRID(Nsuper, TYPE_INT);
 
