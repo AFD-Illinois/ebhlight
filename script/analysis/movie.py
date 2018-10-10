@@ -1,45 +1,76 @@
-import plot as bplt
+#!/usr/bin/env python
+
 import sys, os
-sys.path.append('../')
+mlocation = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(mlocation,'..'))
 import util
 import hdf5_to_dict as io
-from subprocess import call
+from snap import make_snap
+from multiprocessing import Pool
 
 # Set your ffmpeg executable here. If not available, set codec to None
 codec = 'ffmpeg'
 mnam_base = 'anim'
 
-if len(sys.argv) < 4:
-  print('ERROR Format is')
-  print('  movie.py [dumpfolder] [variable] [cart/mks] [size=40] [log=True] [vmin=-3] [vmax=3]')
-  sys.exit()
+from argparse import ArgumentParser
+parser = ArgumentParser(
+  description='Make a movie of your simulation.')
+parser.add_argument('dumpfolder',type=str,
+                    help='Folder containing data')
+parser.add_argument('variable',type=str,
+                    help='Variable to plot')
+parser.add_argument('--coords',type=str,
+                    choices=['cart','mks'],default='cart',
+                    help='Coordinate system. Cartesian or Modified Kerr-Schild')
+parser.add_argument('-s','--size',
+                    type=float,default=40,
+                    help='Size of domain to plot')
+parser.add_argument('-l','--log',
+                    type=bool,default=True,
+                    help='Log scale?')
+parser.add_argument('--vmin',
+                    type=float,default=-4,
+                    help='Colormap lower bound')
+parser.add_argument('--vmax',
+                    type=float,default=0,
+                    help='Colormap upper bound')
+parser.add_argument('-c','--cmap',
+                    type=str,default='jet',
+                    help='Colormap used')
 
-dfold = util.sanitize_path(sys.argv[1])
+args = parser.parse_args()
+
+dfold = util.sanitize_path(args.dumpfolder)
 if not os.path.exists(dfold):
   print('ERROR Folder ' + dfnam + ' does not exist!')
   sys.exit()
 
 tmpdir = 'FRAMES'
 util.safe_remove(tmpdir)
-#util.safe_remove(mnam)
 os.mkdir(tmpdir)
 
 dfnams = io.get_dumps_full(dfold)
+hdr = io.load_hdr(dfnams[0])
+geom = io.load_geom(hdr)
+num_files = len(dfnams)
 
-for n, dfnam in enumerate(dfnams):
-  inst = [sys.executable, 'snap.py', dfnam]
-  for arg in sys.argv[2:]:
-    inst.append(arg)
+def make_frame(pair):
+  i,d = pair
+  print("frame %d/%d" % (i,num_files))
+  make_snap(d,args.variable,args.coords,
+            args.size,args.cmap,args.log,
+            os.path.join(tmpdir,'frame_%08d.png' % i),
+            args.vmin,args.vmax,
+            geom=geom)
 
-  inst.append('savefig=' + os.path.join(tmpdir, 'frame_%08d.png' % n))
-  print('%d' % (n+1) + ' / %d' % len(dfnams))
-  call(inst)
+# for pair in enumerate(dfnams):
+#   make_frame(pair)
+p = Pool()
+p.map(make_frame,enumerate(dfnams))
 
-if not codec == None:
+if codec is not None:
   from subprocess import call
-  mnam = mnam_base + '_' + sys.argv[2] + '_' + sys.argv[3] + '.mp4'
+  mnam = mnam_base + '_' + args.variable + '_' + args.coords + '.mp4'
   util.safe_remove(mnam)
   call([codec, '-i', os.path.join(tmpdir, 'frame_%08d.png'), mnam])
   util.safe_remove(tmpdir)
-
-
