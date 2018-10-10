@@ -90,7 +90,7 @@ Scripts are provided for automatically running and analyzing certain test
 problems.
 
 To run, for example, the Sod shocktube test:
- $ cd bhlight/test/auto
+ $ cd bhlight/test
  $ python sod.py
 which will produce 'sod.png' in the current directory, showing the numerical and
 analytic solutions.
