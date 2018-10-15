@@ -25,9 +25,16 @@ parser.add_argument('--coords',type=str,
 parser.add_argument('-s','--size',
                     type=float,default=40,
                     help='Size of domain to plot')
-parser.add_argument('-l','--log',
-                    type=bool,default=True,
-                    help='Log scale?')
+parser.add_argument('--log',
+                    dest='log',
+                    default=True,
+                    action='store_true',
+                    help='Turns log scale on')
+parser.add_argument('--no-log',
+                    dest='log',
+                    default=True,
+                    action='store_false',
+                    help='Turns log scale off')
 parser.add_argument('--vmin',
                     type=float,default=-4,
                     help='Colormap lower bound')
@@ -37,6 +44,9 @@ parser.add_argument('--vmax',
 parser.add_argument('-c','--cmap',
                     type=str,default='jet',
                     help='Colormap used')
+parser.add_argument('--label',
+                    type=str,default=None,
+                    help='Label for colormap')
 
 args = parser.parse_args()
 
@@ -60,11 +70,10 @@ def make_frame(pair):
   make_snap(d,args.variable,args.coords,
             args.size,args.cmap,args.log,
             os.path.join(tmpdir,'frame_%08d.png' % i),
+            args.label,
             args.vmin,args.vmax,
             geom=geom)
 
-# for pair in enumerate(dfnams):
-#   make_frame(pair)
 p = Pool()
 p.map(make_frame,enumerate(dfnams))
 

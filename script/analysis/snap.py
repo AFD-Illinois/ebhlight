@@ -23,9 +23,16 @@ parser.add_argument('--coords',type=str,
 parser.add_argument('-s','--size',
                     type=float,default=40,
                     help='Size of domain to plot')
-parser.add_argument('-l','--log',
-                    type=bool,default=True,
-                    help='Log scale?')
+parser.add_argument('--log',
+                    dest='log',
+                    default=True,
+                    action='store_true',
+                    help='Turns log scale on')
+parser.add_argument('--no-log',
+                    dest='log',
+                    default=True,
+                    action='store_false',
+                    help='Turns log scale off')
 parser.add_argument('--vmin',
                     type=float,default=-4,
                     help='Colormap lower bound')
@@ -38,8 +45,13 @@ parser.add_argument('-c','--cmap',
 parser.add_argument('--save',
                     type=str,default=None,
                     help='Figure filename if you want to save the figure')
+parser.add_argument('--label',
+                    type=str,default=None,
+                    help='Label for colormap')
 
-def make_snap(dfnam,vnam,coords,size,cmap,logplot,savefig,vmin,vmax,
+def make_snap(dfnam,vnam,coords,size,cmap,logplot,
+              savefig,label,
+              vmin,vmax,
               geom=None):
 
   if not os.path.exists(dfnam):
@@ -64,8 +76,12 @@ def make_snap(dfnam,vnam,coords,size,cmap,logplot,savefig,vmin,vmax,
 
   IS_3D = hdr['N3'] > 1
 
+  if label is None:
+    label = vnam
+
   var = dump[vnam]
   if logplot:
+    print("logplot")
     var = np.log10(var)
 
   if IS_3D:
@@ -76,29 +92,29 @@ def make_snap(dfnam,vnam,coords,size,cmap,logplot,savefig,vmin,vmax,
     ax = a0
     if coords == 'mks':
       bplt.plot_X1X2(ax, geom, var, dump, cmap=cmap, vmin=vmin, vmax=vmax, 
-        cbar=False, label=vnam, ticks=None, shading='gouraud')
+        cbar=False, label=label, ticks=None, shading='gouraud')
     elif coords == 'cart':
       bplt.plot_xz(ax, geom, var, dump, cmap=cmap, vmin=vmin, vmax=vmax,
-        cbar=False, label=vnam, ticks=None, shading='gouraud')
+        cbar=False, label=label, ticks=None, shading='gouraud')
       ax.set_xlim([-size,size]); ax.set_ylim([-size,size])
     ax = a1
     if coords == 'mks':
       bplt.plot_X1X3(ax, geom, var, dump, cmap=cmap, vmin=vmin, vmax=vmax, 
-        cbar=True, label=vnam, ticks=None, shading='gouraud')
+        cbar=True, label=label, ticks=None, shading='gouraud')
     elif coords == 'cart':
       bplt.plot_xy(ax, geom, var, dump, cmap=cmap, vmin=vmin, vmax=vmax,
-        cbar=True, label=vnam, ticks=None, shading='gouraud')
+        cbar=True, label=label, ticks=None, shading='gouraud')
       ax.set_xlim([-size,size]); ax.set_ylim([-size,size])
       
   else:
     if coords == 'mks':
       fig, ax = plt.subplots(1, 1, figsize=(10, 10))
       bplt.plot_X1X2(ax, geom, var, dump, cmap=cmap, vmin=vmin, vmax=vmax,
-        cbar=True, label=vnam, ticks=None, shading='gouraud')
+        cbar=True, label=label, ticks=None, shading='gouraud')
     elif coords == 'cart':
       fig, ax = plt.subplots(1, 1, figsize=(7, 10))
       bplt.plot_xz(ax, geom, var, dump, cmap=cmap, vmin=vmin, vmax=vmax,
-        cbar=True, label=vnam, ticks=None, shading='gouraud')
+        cbar=True, label=label, ticks=None, shading='gouraud')
       ax.set_xlim([0,size]); ax.set_ylim([-size,size])
 
   if savefig == False:
@@ -119,6 +135,7 @@ if __name__ == "__main__":
   cmap = args.cmap
   logplot = args.log
   savefig = args.save if args.save is not None else False
+  label = args.label
   vmin,vmax = args.vmin,args.vmax
 
-  make_snap(dfnam,vnam,coords,size,cmap,logplot,savefig,vmin,vmax)  
+  make_snap(dfnam,vnam,coords,size,cmap,logplot,savefig,label,vmin,vmax)  
