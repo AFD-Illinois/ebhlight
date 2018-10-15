@@ -261,8 +261,8 @@ void fixup_electrons(grid_prim_type P)
 
 void fixup_electrons_1zone(double P[NVAR])
 {
-  double kelmax = P[KTOT]*pow(P[RHO],gam-game)/(tptemin + (gam-1.)/(game-1.));
-  double kelmin = P[KTOT]*pow(P[RHO],gam-game)/(tptemax + (gam-1.)/(game-1.));
+  double kelmax = P[KTOT]*pow(P[RHO],gam-game)/(tptemin*(gam-1.)/(gamp-1.) + (gam-1.)/(game-1.));
+  double kelmin = P[KTOT]*pow(P[RHO],gam-game)/(tptemax*(gam-1.)/(gamp-1.) + (gam-1.)/(game-1.));
 
   // Replace NANs with cold electrons
   if (isnan(P[KEL])) P[KEL] = kelmin;
