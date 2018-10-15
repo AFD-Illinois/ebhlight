@@ -25,16 +25,11 @@ parser.add_argument('--coords',type=str,
 parser.add_argument('-s','--size',
                     type=float,default=40,
                     help='Size of domain to plot')
-parser.add_argument('--log',
-                    dest='log',
-                    default=True,
-                    action='store_true',
-                    help='Turns log scale on')
-parser.add_argument('--no-log',
+parser.add_argument('--lin',
                     dest='log',
                     default=True,
                     action='store_false',
-                    help='Turns log scale off')
+                    help='Sets scale to linear. Default is log.')
 parser.add_argument('--vmin',
                     type=float,default=-4,
                     help='Colormap lower bound')
