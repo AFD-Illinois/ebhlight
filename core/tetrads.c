@@ -42,9 +42,9 @@ void make_tetrad(int i, int j, int k, double Ucon[NDIM], double trial[NDIM],
 {
   // closeness of trial to other three vectors
   double X1ness = 0., X2ness = 0., X3ness = 0.;
-  DLOOP1 X1ness += Gcov[1][mu]*trial[mu];
-  DLOOP1 X2ness += Gcov[2][mu]*trial[mu];
-  DLOOP1 X3ness += Gcov[3][mu]*trial[mu];
+  DLOOP1 X1ness += Gcov[1][mu]*trial[mu]/sqrt(fabs(Gcov[1][1]));
+  DLOOP1 X2ness += Gcov[2][mu]*trial[mu]/sqrt(fabs(Gcov[2][2]));
+  DLOOP1 X3ness += Gcov[3][mu]*trial[mu]/sqrt(fabs(Gcov[3][3]));
   X1ness = fabs(X1ness);
   X2ness = fabs(X2ness);
   X3ness = fabs(X3ness);
