@@ -163,7 +163,7 @@ void jac_harm_to_bl(const double X[NDIM],
     double y, thJ;
     thJ_of_X(X,&y,&thJ);
     double dydX2 = 2.;
-    double dthJdy = poly_norm*(2. + pow(y/poly_xt,poly_alpha));
+    double dthJdy = poly_norm*(1. + pow(y/poly_xt,poly_alpha));
     double dthJdX2 = dthJdy*dydX2;
     dthdX1 = -mks_smooth*(thG-thJ)*exp(mks_smooth*(startx[1]-X[1]));
     dthdX2 = dthGdX2 + exp(mks_smooth*(startx[1]-X[1]))*(dthGdX2 - dthJdX2);
