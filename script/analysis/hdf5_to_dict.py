@@ -330,14 +330,14 @@ def load_dump(fname, geom=None):
   if geom['full']:
     if hdr['METRIC'] in ['MKS', 'MMKS']:
       dump['ucon_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_con'], dump['ucon'])
-      dump['ucov_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_cov'], dump['ucov'], transpose=True)
+      dump['ucov_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_cov'], dump['ucov'])
       dump['bcon_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_con'], dump['bcon'])
-      dump['bcov_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_con'], dump['bcov'], transpose=True)
+      dump['bcov_bl'] = grid_matrix_multiply(geom['Lambda_h2bl_con'], dump['bcov'])
 
     dump['ucon_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_con'], dump['ucon'])
-    dump['ucov_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_cov'], dump['ucov'], transpose=True)
+    dump['ucov_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_cov'], dump['ucov'])
     dump['bcon_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_con'], dump['bcon'])
-    dump['bcov_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_con'], dump['bcov'], transpose=True)
+    dump['bcov_cart'] = grid_matrix_multiply(geom['Lambda_h2cart_con'], dump['bcov'])
 
   dfile.close()
 
