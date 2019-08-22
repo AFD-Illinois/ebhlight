@@ -646,16 +646,13 @@ void dump()
   int n_prim = NVAR; WRITE_HDR(n_prim, TYPE_INT);
   hdf5_write_str_list(vnams, "prim_names", file_id, STRLEN, NVAR);  
 
-  int my_test_int = 5;
-  write_scalar(&my_test_int, "my_test_int", TYPE_INT);
-
   WRITE_HDR(gam, TYPE_DBL);
   WRITE_HDR(cour, TYPE_DBL);
   WRITE_HDR(tf, TYPE_DBL);
   hdf5_add_units("tf", "code", file_id);
   #if ELECTRONS
-  WRITE_HDR(game, TYPE_DBL);
-  WRITE_HDR(gamp, TYPE_DBL);
+  double gam_e = game; WRITE_HDR(gam_e, TYPE_DBL);
+  double gam_p = gamp; WRITE_HDR(gam_p, TYPE_DBL);
   WRITE_HDR(tptemin, TYPE_DBL);
   WRITE_HDR(tptemax, TYPE_DBL);
   WRITE_HDR(fel0, TYPE_DBL);
@@ -701,9 +698,8 @@ void dump()
   hdf5_set_directory("/header/");
   #endif
 
-  hdf5_set_directory("/");
   hdf5_make_directory("geom", file_id);
-  hdf5_set_directory("/geom/");
+  hdf5_set_directory("/header/geom/");
   double startx1 = startx[1]; WRITE_HDR(startx1, TYPE_DBL);
   double startx2 = startx[2]; WRITE_HDR(startx2, TYPE_DBL);
   double startx3 = startx[3]; WRITE_HDR(startx3, TYPE_DBL);
@@ -713,42 +709,42 @@ void dump()
   int n_dim = NDIM; WRITE_HDR(n_dim, TYPE_INT);
   #if METRIC == MKS
   hdf5_make_directory("mks", file_id);
-  hdf5_set_directory("/geom/mks/");
-  double r_eh = Reh; WRITE_HDR(r_eh, TYPE_DBL);
-  hdf5_add_units("r_eh", "code", file_id);
-  double r_in = Rin; WRITE_HDR(r_in, TYPE_DBL);
-  hdf5_add_units("r_in", "code", file_id);
-  double r_isco = Risco; WRITE_HDR(r_isco, TYPE_DBL);
-  hdf5_add_units("r_isco", "code", file_id);
-  double r_out = Rout; WRITE_HDR(r_out, TYPE_DBL);
-  hdf5_add_units("r_out", "code", file_id);
+  hdf5_set_directory("/header/geom/mks/");
+  WRITE_HDR(Reh, TYPE_DBL);
+  hdf5_add_units("Reh", "code", file_id);
+  WRITE_HDR(Rin, TYPE_DBL);
+  hdf5_add_units("Rin", "code", file_id);
+  WRITE_HDR(Risco, TYPE_DBL);
+  hdf5_add_units("Risco", "code", file_id);
+  WRITE_HDR(Rout, TYPE_DBL);
+  hdf5_add_units("Rout", "code", file_id);
   WRITE_HDR(a, TYPE_DBL);
   WRITE_HDR(hslope, TYPE_DBL);
     #if RADIATION
-    double r_out_rad = Rout_rad; WRITE_HDR(r_out_rad, TYPE_DBL);
-    hdf5_add_units("r_out_rad", "code", file_id);
+    WRITE_HDR(Rout_rad, TYPE_DBL);
+    hdf5_add_units("Rout_rad", "code", file_id);
     #endif
   #endif
 
   #if METRIC == MMKS
   hdf5_make_directory("mmks", file_id);
-  hdf5_set_directory("/geom/mmks/");
-  double r_eh = Reh; WRITE_HDR(r_eh, TYPE_DBL);
-  hdf5_add_units("r_eh", "code", file_id);
-  double r_in = Rin; WRITE_HDR(r_in, TYPE_DBL);
-  hdf5_add_units("r_in", "code", file_id);
-  double r_isco = Risco; WRITE_HDR(r_isco, TYPE_DBL);
-  hdf5_add_units("r_isco", "code", file_id);
-  double r_out = Rout; WRITE_HDR(r_out, TYPE_DBL);
-  hdf5_add_units("r_out", "code", file_id);
+  hdf5_set_directory("/header/geom/mmks/");
+  WRITE_HDR(Reh, TYPE_DBL);
+  hdf5_add_units("Reh", "code", file_id);
+  WRITE_HDR(Rin, TYPE_DBL);
+  hdf5_add_units("Rin", "code", file_id);
+  WRITE_HDR(Risco, TYPE_DBL);
+  hdf5_add_units("Risco", "code", file_id);
+  WRITE_HDR(Rout, TYPE_DBL);
+  hdf5_add_units("Rout", "code", file_id);
   WRITE_HDR(a, TYPE_DBL);
   WRITE_HDR(hslope, TYPE_DBL);
   WRITE_HDR(poly_alpha, TYPE_DBL);
   WRITE_HDR(poly_xt, TYPE_DBL);
   WRITE_HDR(mks_smooth, TYPE_DBL);
     #if RADIATION
-    double r_out_rad = Rout_rad; WRITE_HDR(r_out_rad, TYPE_DBL);
-    hdf5_add_units("r_out_rad", "code", file_id);
+    WRITE_HDR(Rout_rad, TYPE_DBL);
+    hdf5_add_units("Rout_rad", "code", file_id);
     #endif
   #endif
  
