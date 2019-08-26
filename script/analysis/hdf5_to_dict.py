@@ -68,19 +68,19 @@ def load_hdr(fname):
 
 
   if hdr['METRIC'] == 'MKS':
-    hdr['Rin'] = read_scalar(dfile, '/header/geom/mks/Rin')
-    hdr['Rout'] = read_scalar(dfile, '/header/geom/mks/Rout')
-    hdr['Reh'] = read_scalar(dfile, '/header/geom/mks/Reh')
-    hdr['Risco'] = read_scalar(dfile, '/header/geom/mks/Risco')
+    hdr['Rin'] = read_scalar(dfile, '/header/geom/mks/r_in')
+    hdr['Rout'] = read_scalar(dfile, '/header/geom/mks/r_out')
+    hdr['Reh'] = read_scalar(dfile, '/header/geom/mks/r_eh')
+    hdr['Risco'] = read_scalar(dfile, '/header/geom/mks/r_isco')
     hdr['a'] = read_scalar(dfile, '/header/geom/mks/a')
     hdr['hslope'] = read_scalar(dfile, '/header/geom/mks/hslope')
     if hdr['RADIATION']:
       hdr['Rout_rad'] = read_scalar(dfile, '/header/geom/mks/r_out_rad')
   if hdr['METRIC'] == 'MMKS':
-    hdr['Rin'] = read_scalar(dfile, '/header/geom/mmks/Rin')
-    hdr['Rout'] = read_scalar(dfile, '/header/geom/mmks/Rout')
-    hdr['Reh'] = read_scalar(dfile, '/header/geom/mmks/Reh')
-    hdr['Risco'] = read_scalar(dfile, '/header/geom/mmks/Risco')
+    hdr['Rin'] = read_scalar(dfile, '/header/geom/mmks/r_in')
+    hdr['Rout'] = read_scalar(dfile, '/header/geom/mmks/r_out')
+    hdr['Reh'] = read_scalar(dfile, '/header/geom/mmks/r_eh')
+    hdr['Risco'] = read_scalar(dfile, '/header/geom/mmks/r_isco')
     hdr['a'] = read_scalar(dfile, '/header/geom/mmks/a')
     hdr['hslope'] = read_scalar(dfile, '/header/geom/mmks/hslope')
     hdr['poly_xt'] = read_scalar(dfile, '/header/geom/mmks/poly_xt')

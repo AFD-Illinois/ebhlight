@@ -710,41 +710,41 @@ void dump()
   #if METRIC == MKS
   hdf5_make_directory("mks", file_id);
   hdf5_set_directory("/header/geom/mks/");
-  WRITE_HDR(Reh, TYPE_DBL);
-  hdf5_add_units("Reh", "code", file_id);
-  WRITE_HDR(Rin, TYPE_DBL);
-  hdf5_add_units("Rin", "code", file_id);
-  WRITE_HDR(Risco, TYPE_DBL);
-  hdf5_add_units("Risco", "code", file_id);
-  WRITE_HDR(Rout, TYPE_DBL);
-  hdf5_add_units("Rout", "code", file_id);
+  double r_eh = Reh; WRITE_HDR(r_eh, TYPE_DBL);
+  hdf5_add_units("r_eh", "code", file_id);
+  double r_in = Rin; WRITE_HDR(r_in, TYPE_DBL);
+  hdf5_add_units("r_in", "code", file_id);
+  double r_isco = Risco; WRITE_HDR(r_isco, TYPE_DBL);
+  hdf5_add_units("r_isco", "code", file_id);
+  double r_out = Rout; WRITE_HDR(r_out, TYPE_DBL);
+  hdf5_add_units("r_out", "code", file_id);
   WRITE_HDR(a, TYPE_DBL);
   WRITE_HDR(hslope, TYPE_DBL);
     #if RADIATION
-    WRITE_HDR(Rout_rad, TYPE_DBL);
-    hdf5_add_units("Rout_rad", "code", file_id);
+    double r_out_rad = Rout_rad; WRITE_HDR(r_out_rad, TYPE_DBL);
+    hdf5_add_units("r_out_rad", "code", file_id);
     #endif
   #endif
 
   #if METRIC == MMKS
   hdf5_make_directory("mmks", file_id);
   hdf5_set_directory("/header/geom/mmks/");
-  WRITE_HDR(Reh, TYPE_DBL);
-  hdf5_add_units("Reh", "code", file_id);
-  WRITE_HDR(Rin, TYPE_DBL);
-  hdf5_add_units("Rin", "code", file_id);
-  WRITE_HDR(Risco, TYPE_DBL);
-  hdf5_add_units("Risco", "code", file_id);
-  WRITE_HDR(Rout, TYPE_DBL);
-  hdf5_add_units("Rout", "code", file_id);
+  double r_eh = Reh; WRITE_HDR(r_eh, TYPE_DBL);
+  hdf5_add_units("r_eh", "code", file_id);
+  double r_in = Rin; WRITE_HDR(r_in, TYPE_DBL);
+  hdf5_add_units("r_in", "code", file_id);
+  double r_isco = Risco; WRITE_HDR(r_isco, TYPE_DBL);
+  hdf5_add_units("r_isco", "code", file_id);
+  double r_out = Rout; WRITE_HDR(r_out, TYPE_DBL);
+  hdf5_add_units("r_out", "code", file_id);
   WRITE_HDR(a, TYPE_DBL);
   WRITE_HDR(hslope, TYPE_DBL);
   WRITE_HDR(poly_alpha, TYPE_DBL);
   WRITE_HDR(poly_xt, TYPE_DBL);
   WRITE_HDR(mks_smooth, TYPE_DBL);
     #if RADIATION
-    WRITE_HDR(Rout_rad, TYPE_DBL);
-    hdf5_add_units("Rout_rad", "code", file_id);
+    double r_out_rad = Rout_rad; WRITE_HDR(r_out_rad, TYPE_DBL);
+    hdf5_add_units("r_out_rad", "code", file_id);
     #endif
   #endif
  
