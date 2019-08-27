@@ -92,7 +92,7 @@ def load_hdr(fname):
   hdr['gam'] = read_scalar(dfile, '/header/gam')
   hdr['cour'] = read_scalar(dfile, '/header/cour')
 
-  hdr['vnams'] = [h5_to_str(vnam) for vnam in read_scalar(dfile, '/header/prim_names')]
+  hdr['vnams'] = [h5_to_str(vnam) for vnam in dfile['/header/prim_names'][()]]
 
   if hdr['ELECTRONS']:
     hdr['game'] = read_scalar(dfile, '/header/gam_e')
