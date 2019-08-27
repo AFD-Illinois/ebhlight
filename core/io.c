@@ -48,28 +48,27 @@ void hdf5_add_units(const char *name, const char *unit, hid_t file_id)
   hdf5_add_att(unit, "units", name, file_id, string_type);
   H5Tclose(string_type);
 }
-void hdf5_write_str_list(const void *data, const char *name, hid_t file_id, size_t str_len, size_t len)
-{                                                                                
-  char path[STRLEN];                                                             
-  strncpy(path, hdf5_cur_dir, STRLEN);                                           
-  strncat(path, name, STRLEN - strlen(path));                                    
-                                                                                 
-  // Taken (stolen) from https://support.hdfgroup.org/ftp/HDF5/examples/C/          
-  hsize_t dims_of_char_array[] = {len};                                          
-  hsize_t dims_of_char_dataspace[] = {1};                                        
-                                                                                 
-  hid_t vlstr_h5t = H5Tcopy(H5T_C_S1);                                           
-  H5Tset_size(vlstr_h5t, str_len);
-                                                                                 
-  hid_t mem_h5t = H5Tarray_create(vlstr_h5t, 1, dims_of_char_array);             
-  hid_t dataspace = H5Screate_simple(1, dims_of_char_dataspace, NULL); // use same dims as int ds
-  hid_t dataset = H5Dcreate(file_id, path, mem_h5t, dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  H5Dwrite(dataset, mem_h5t, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);               
+void hdf5_write_str_list (const void *data, const char *name, hid_t file_id,
+                     size_t str_len, size_t len)
+{
+  char path[STRLEN];
+  strncpy(path, hdf5_cur_dir, STRLEN);
+  strncat(path, name, STRLEN - strlen(path));
 
-  H5Dclose(dataset);                                                             
-  H5Sclose(dataspace);                                                           
-  H5Tclose(mem_h5t);                                                             
-  H5Tclose(vlstr_h5t);                                                           
+  // Adapted (stolen) from https://support.hdfgroup.org/ftp/HDF5/examples/C/
+  hsize_t dims_of_char_dataspace[] = {len};
+
+  hid_t vlstr_h5t = H5Tcopy(H5T_C_S1);
+  H5Tset_size(vlstr_h5t, str_len);
+
+  hid_t dataspace = H5Screate_simple(1, dims_of_char_dataspace, NULL);
+  hid_t dataset = H5Dcreate(file_id, path, vlstr_h5t, dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  herr_t err = H5Dwrite(dataset, vlstr_h5t, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+  if (err < 0) fprintf(stderr, "hdf5_write_str_list failed writing %s: %d", path, err); // If anything above fails, the write should too
+
+  H5Dclose(dataset);
+  H5Sclose(dataspace);
+  H5Tclose(vlstr_h5t);
 }  
 
 void write_scalar(void *data, const char *name, hsize_t type);
@@ -1449,49 +1448,28 @@ int restart_init()
 
 void write_scalar(void *data, const char *name, hsize_t type)
 {
+  hid_t memspace, plist_id, dset_id;
+  char path[STRLEN];
+  strcpy(path, hdf5_cur_dir);
+  strcat(path, name);
+
   if (type == TYPE_STR) {
-    hid_t filespace, memspace, plist_id, dset_id;
-    filespace = H5Screate_simple(1, fdims_hdr, NULL);
-    H5Sselect_hyperslab(filespace, H5S_SELECT_SET, fstart_hdr, NULL, fcount_hdr, NULL);
-    memspace = H5Screate_simple(1, mdims_hdr, NULL);
-    H5Sselect_hyperslab(memspace, H5S_SELECT_SET, mstart_hdr, NULL, fcount_hdr, NULL);
-    plist_id = H5Pcreate(H5P_DATASET_CREATE);
-
-    char path[STRLEN];
-    strcpy(path, hdf5_cur_dir);
-    strcat(path, name);
-    hid_t string_type = H5Tcopy(H5T_C_S1);
-    H5Tset_size(string_type, strlen(data));
-    plist_id = H5Pcreate(H5P_DATASET_CREATE);
-    dset_id = H5Dcreate(file_id, path, string_type, filespace, H5P_DEFAULT,
-      plist_id, H5P_DEFAULT);
-    H5Pclose(plist_id);
-    plist_id = H5Pcreate(H5P_DATASET_XFER);
-    H5Dwrite(dset_id, string_type, memspace, filespace, plist_id, data);
-  
-    H5Dclose(dset_id);
-    H5Pclose(plist_id);
-    H5Sclose(memspace);
-    H5Sclose(filespace);
-  } else {
-    hid_t memspace, plist_id, dset_id;
-    char path[STRLEN];
-    strcpy(path, hdf5_cur_dir);
-    strcat(path, name);
-    
-    memspace = H5Screate(H5S_SCALAR);
-    plist_id = H5Pcreate(H5P_DATASET_CREATE);
-    dset_id = H5Dcreate(file_id, path, type, memspace, H5P_DEFAULT, plist_id, H5P_DEFAULT);
-    H5Pclose(plist_id);
-
-    plist_id = H5Pcreate(H5P_DATASET_XFER);
-    H5Pset_dxpl_mpio(plist_id, H5FD_MPIO_COLLECTIVE);
-    H5Dwrite(dset_id, type, memspace, memspace, plist_id, data);
-
-    H5Dclose(dset_id);
-    H5Pclose(plist_id);
-    H5Sclose(memspace);
+    type = H5Tcopy(H5T_C_S1);
+    H5Tset_size(type, strlen(data));
   }
+
+  memspace = H5Screate(H5S_SCALAR);
+  plist_id = H5Pcreate(H5P_DATASET_CREATE);
+  dset_id = H5Dcreate(file_id, path, type, memspace, H5P_DEFAULT, plist_id, H5P_DEFAULT);
+  H5Pclose(plist_id);
+
+  plist_id = H5Pcreate(H5P_DATASET_XFER);
+  H5Pset_dxpl_mpio(plist_id, H5FD_MPIO_COLLECTIVE);
+  H5Dwrite(dset_id, type, memspace, memspace, plist_id, data);
+
+  H5Dclose(dset_id);
+  H5Pclose(plist_id);
+  H5Sclose(memspace);
 }
 
 void read_scalar(void *data, const char *name, hsize_t type)
