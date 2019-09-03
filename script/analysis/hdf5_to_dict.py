@@ -5,7 +5,7 @@ import glob
 units = units.get_cgs()
 SMALL = 1.e-30
 
-supported_versions = ['bhl-release-1.0']
+supported_versions = ['bhl-release-1.0', 'ebhlight-release-1.0']
 
 def h5_to_str(string):
   return string.decode()
