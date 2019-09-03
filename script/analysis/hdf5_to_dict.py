@@ -61,42 +61,42 @@ def load_hdr(fname):
   hdr['FLOORADV'] = '/header/has_flooradv' in dfile.keys()
   hdr['NVAR'] = read_scalar(dfile, '/header/n_prim')
   hdr['tf'] = read_scalar(dfile, '/header/tf')
-  hdr['startx'] = np.array([0, read_scalar(dfile, '/geom/startx1'),
-    read_scalar(dfile, '/geom/startx2'), read_scalar(dfile, '/geom/startx3')])
-  hdr['dx'] = np.array([0, read_scalar(dfile, '/geom/dx1'), read_scalar(dfile, '/geom/dx2'),
-    read_scalar(dfile, '/geom/dx3')])
+  hdr['startx'] = np.array([0, read_scalar(dfile, '/header/geom/startx1'),
+    read_scalar(dfile, '/header/geom/startx2'), read_scalar(dfile, '/header/geom/startx3')])
+  hdr['dx'] = np.array([0, read_scalar(dfile, '/header/geom/dx1'), read_scalar(dfile, '/header/geom/dx2'),
+    read_scalar(dfile, '/header/geom/dx3')])
 
 
   if hdr['METRIC'] == 'MKS':
-    hdr['Rin'] = read_scalar(dfile, '/geom/mks/r_in')
-    hdr['Rout'] = read_scalar(dfile, '/geom/mks/r_out')
-    hdr['Reh'] = read_scalar(dfile, '/geom/mks/r_eh')
-    hdr['Risco'] = read_scalar(dfile, '/geom/mks/r_isco')
-    hdr['a'] = read_scalar(dfile, '/geom/mks/a')
-    hdr['hslope'] = read_scalar(dfile, '/geom/mks/hslope')
+    hdr['Rin'] = read_scalar(dfile, '/header/geom/mks/r_in')
+    hdr['Rout'] = read_scalar(dfile, '/header/geom/mks/r_out')
+    hdr['Reh'] = read_scalar(dfile, '/header/geom/mks/r_eh')
+    hdr['Risco'] = read_scalar(dfile, '/header/geom/mks/r_isco')
+    hdr['a'] = read_scalar(dfile, '/header/geom/mks/a')
+    hdr['hslope'] = read_scalar(dfile, '/header/geom/mks/hslope')
     if hdr['RADIATION']:
-      hdr['Rout_rad'] = read_scalar(dfile, '/geom/mks/r_out_rad')
+      hdr['Rout_rad'] = read_scalar(dfile, '/header/geom/mks/r_out_rad')
   if hdr['METRIC'] == 'MMKS':
-    hdr['Rin'] = read_scalar(dfile, '/geom/mmks/r_in')
-    hdr['Rout'] = read_scalar(dfile, '/geom/mmks/r_out')
-    hdr['Reh'] = read_scalar(dfile, '/geom/mmks/r_eh')
-    hdr['Risco'] = read_scalar(dfile, '/geom/mmks/r_isco')
-    hdr['a'] = read_scalar(dfile, '/geom/mmks/a')
-    hdr['hslope'] = read_scalar(dfile, '/geom/mmks/hslope')
-    hdr['poly_xt'] = read_scalar(dfile, '/geom/mmks/poly_xt')
-    hdr['poly_alpha'] = read_scalar(dfile, '/geom/mmks/poly_alpha')
-    hdr['mks_smooth'] = read_scalar(dfile, '/geom/mmks/mks_smooth')
+    hdr['Rin'] = read_scalar(dfile, '/header/geom/mmks/r_in')
+    hdr['Rout'] = read_scalar(dfile, '/header/geom/mmks/r_out')
+    hdr['Reh'] = read_scalar(dfile, '/header/geom/mmks/r_eh')
+    hdr['Risco'] = read_scalar(dfile, '/header/geom/mmks/r_isco')
+    hdr['a'] = read_scalar(dfile, '/header/geom/mmks/a')
+    hdr['hslope'] = read_scalar(dfile, '/header/geom/mmks/hslope')
+    hdr['poly_xt'] = read_scalar(dfile, '/header/geom/mmks/poly_xt')
+    hdr['poly_alpha'] = read_scalar(dfile, '/header/geom/mmks/poly_alpha')
+    hdr['mks_smooth'] = read_scalar(dfile, '/header/geom/mmks/mks_smooth')
     if hdr['RADIATION']:
-      hdr['Rout_rad'] = read_scalar(dfile, '/geom/mmks/r_out_rad')
+      hdr['Rout_rad'] = read_scalar(dfile, '/header/geom/mmks/r_out_rad')
 
   hdr['gam'] = read_scalar(dfile, '/header/gam')
   hdr['cour'] = read_scalar(dfile, '/header/cour')
 
-  hdr['vnams'] = [h5_to_str(vnam) for vnam in read_scalar(dfile, '/header/prim_names')]
+  hdr['vnams'] = [h5_to_str(vnam) for vnam in dfile['/header/prim_names'][()]]
 
   if hdr['ELECTRONS']:
-    hdr['game'] = read_scalar(dfile, '/header/game')
-    hdr['gamp'] = read_scalar(dfile, '/header/gamp')
+    hdr['game'] = read_scalar(dfile, '/header/gam_e')
+    hdr['gamp'] = read_scalar(dfile, '/header/gam_p')
     hdr['tptemin'] = read_scalar(dfile, '/header/tptemin')
     hdr['tptemax'] = read_scalar(dfile, '/header/tptemax')
     hdr['fel0'] = read_scalar(dfile, '/header/fel0')
