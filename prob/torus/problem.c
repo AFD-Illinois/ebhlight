@@ -20,11 +20,23 @@ double lfish_calc(double rmax) ;
 static int MAD;
 static double BHflux;
 static double beta;
+static double u_jitter;
+static double rin;
+static double rmax;
 void set_problem_params()
 {
+  // register required parameters
   set_param("MAD", &MAD);
   set_param("BHflux", &BHflux);
   set_param("beta", &beta);
+  
+  // register optional parameters
+  set_param_optional("u_jitter", &u_jitter);
+  set_param_optional("rin", &rin);
+  set_param_optional("rmax", &rmax);
+ 
+  // set defaults for optional parameters
+  u_jitter = 4.e-2;
 }
 
 void init_prob()
@@ -32,17 +44,20 @@ void init_prob()
   double r, th, sth, cth, ur, uh, up, u, rho, X[NDIM];
   struct of_geom *geom;
 
+  printf(" we have %g %g %g\n", u_jitter, rin, rmax );
+
   // Disk interior
-  double l, rin, lnh, expm2chi, up1, DD, AA, SS, thin, sthin, cthin, DDin, AAin;
+  double l, lnh, expm2chi, up1, DD, AA, SS, thin, sthin, cthin, DDin, AAin;
   double SSin, kappa, hm1;
 
   // Magnetic field
   static double A[N1+2*NG][N2+2*NG];
-  double rho_av, rhomax, umax, /*beta, */bsq_ij, bsq_max, q, rmax, Nloops;//, rstart;
+  double rho_av, rhomax, umax, /*beta, */bsq_ij, bsq_max, q, Nloops;//, rstart;
   //double rend;
 
   // Fishbone-Moncrief parameters
   if (N3 == 1) {
+    fprintf(stderr, "! N3=1, defaulting to MAD=1 initial configuration.\n");
     MAD = 1; // SANE initial field not supported in 2D
     rin = 6.;
     rmax = 12.;
@@ -174,7 +189,7 @@ void init_prob()
 
       P[i][j][k][RHO] = rho;
       if (rho > rhomax) rhomax = rho;
-      P[i][j][k][UU] = u * (1. + 4.e-2 * (get_rand() - 0.5));
+      P[i][j][k][UU] = u * (1. + u_jitter * (get_rand() - 0.5));
       if (u > umax && r > rin) umax = u;
       P[i][j][k][U1] = ur;
       P[i][j][k][U2] = uh;

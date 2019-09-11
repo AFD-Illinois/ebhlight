@@ -506,6 +506,7 @@ void interact(grid_prim_type P, double t, double dt);
 // input.c
 void init_params(char *pfname);
 void set_param(char *key, void *data);
+void set_param_optional(char *key, void *data);
 
 // io.c
 //void set_core_params();
