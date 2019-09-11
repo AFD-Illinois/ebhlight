@@ -91,8 +91,6 @@ void push_superphotons(double dt)
         push_status = push_superphoton(ph, dtpush);
 
         if (push_status == PUSH_FAIL) {
-          printf("PUSH FAIL X[] = %e %e %e %e k.k\n", ph->X[2][0], ph->X[2][1], ph->X[2][2], ph->X[2][3]);
-          printf("PUSH FAIL K[] = %e %e %e %e k.k\n", ph->Kcon[2][0], ph->Kcon[2][1], ph->Kcon[2][2], ph->Kcon[2][3]);
           list_remove(&ph, &head, &prev);
           step_lost_local++;
           continue;
