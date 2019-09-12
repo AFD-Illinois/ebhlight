@@ -7,11 +7,16 @@
  ******************************************************************************/
 
 #include "decs.h"
+#include "io.h"
 
 static double tscale;
 void set_problem_params()
 {
   set_param("tscale", &tscale);
+}
+void save_problem_params()
+{
+  WRITE_HDR(tscale, TYPE_DBL);
 }
 
 void init_prob()

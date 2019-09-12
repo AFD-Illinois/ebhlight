@@ -105,7 +105,9 @@ int main(int argc, char *argv[])
     init_core();
    
     // Set primitive variables
-    printf("Init from GRMHD? %i\n", strcmp(init_from_grmhd, "No") != 0);
+    if (mpi_io_proc()) {
+      fprintf(stderr, "Init from GRMHD? %i\n\n", strcmp(init_from_grmhd, "No") != 0);
+    }
     if (strcmp(init_from_grmhd, "No") == 0) { // Initialize from problem.c
       init_prob();
       #if ELECTRONS

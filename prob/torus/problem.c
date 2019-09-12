@@ -8,6 +8,8 @@
 
 #include "decs.h"
 
+#include "io.h"
+
 #define CLASSIC_BFIELD (0)
 #define LOW_FLUX (1)
 
@@ -41,6 +43,25 @@ void set_problem_params()
   u_jitter = 4.e-2;
   rin = 20.;
   rmax = 41.;
+}
+
+void save_problem_params()
+{
+  hdf5_make_directory("macros");
+  int tmp = CLASSIC_BFIELD;
+  write_scalar(&tmp, "macros/CLASSIC_BFIELD", TYPE_INT);
+  tmp = LOW_FLUX;
+  write_scalar(&tmp, "macros/LOW_FLUX", TYPE_INT);
+  tmp = NO_BFIELD;
+  write_scalar(&tmp, "macros/NO_BFIELD", TYPE_INT);
+
+  WRITE_HDR(MAD, TYPE_INT);
+  WRITE_HDR(BHflux, TYPE_DBL);
+  WRITE_HDR(beta, TYPE_DBL);
+
+  WRITE_HDR(u_jitter, TYPE_DBL);
+  WRITE_HDR(rin, TYPE_DBL);
+  WRITE_HDR(rmax, TYPE_DBL);
 }
 
 void init_prob()

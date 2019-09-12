@@ -593,6 +593,7 @@ void mhd_vchar(double *pr, struct of_state *q, struct of_geom *geom, int js,
 
 // problem.c
 void set_problem_params();
+void save_problem_params();
 void init_prob();
 void bound_gas_prob_x1l(int i, int j, int k, grid_prim_type P);
 void bound_gas_prob_x1r(int i, int j, int k, grid_prim_type P);

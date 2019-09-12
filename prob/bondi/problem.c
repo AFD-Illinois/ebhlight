@@ -15,6 +15,9 @@ double lfish_calc(double rmax) ;
 void set_problem_params()
 {
 }
+void save_problem_params()
+{
+}
 
 // Rootfinding for analytic Bondi solution
 #include <gsl/gsl_errno.h>

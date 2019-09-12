@@ -7,11 +7,16 @@
  ******************************************************************************/
 
 #include "decs.h"
+#include "io.h"
 
 static int shock;
 void set_problem_params()
 {
   set_param("shock", &shock);
+}
+void save_problem_params()
+{ 
+  WRITE_HDR(shock, TYPE_INT);
 }
 
 void init_prob()

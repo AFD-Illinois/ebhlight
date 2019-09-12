@@ -8,7 +8,7 @@
 
 #include "decs.h"
 
-#include <hdf5.h>
+#include "io.h"
 
 #define MAX_GRID_DIM (5)
 
@@ -16,7 +16,7 @@
 static char hdf5_cur_dir[STRLEN] = "/";
 // Make a directory (in the current directory) with given name
 // This doesn't take a full path, just a name
-void hdf5_make_directory(const char *name, hid_t file_id)
+void hdf5_make_directory(const char *name)
 {
   // Add current directory to group name
   char path[STRLEN];
@@ -71,51 +71,6 @@ void hdf5_write_str_list (const void *data, const char *name, hid_t file_id,
   H5Tclose(vlstr_h5t);
 }  
 
-void write_scalar(void *data, const char *name, hsize_t type);
-void read_scalar(void *data, const char *name, hsize_t type);
-void write_array(void *data, const char *name, hsize_t rank,
-  hsize_t *fdims, hsize_t *fstart, hsize_t *fcount, hsize_t *mdims,
-  hsize_t *mstart, hsize_t type);
-void read_array(void *data, const char *name, hsize_t rank,
-  hsize_t *fdims, hsize_t *fstart, hsize_t *fcount, hsize_t *mdims,
-  hsize_t *mstart, hsize_t type);
-hsize_t product_hsize_t(hsize_t a[], int size);
-
-// Some macro tricks to reduce the number of lines of code
-#define TYPE_FLOAT H5T_NATIVE_FLOAT
-#define TYPE_DBL H5T_NATIVE_DOUBLE
-#define TYPE_INT H5T_NATIVE_INT
-#define TYPE_STR H5T_NATIVE_CHAR
-
-#define WRITE_HDR(x, type) write_scalar((void*)&x, #x, type)
-#define READ_HDR(x, type) read_scalar((void*)&x, #x, type)
-
-#define WRITE_ARRAY(x, rank, fdims, fstart, fcount, mdims, mstart, type) \
-  write_array((void*)x, #x, rank, fdims, fstart, fcount, mdims, mstart, type)
-#define WRITE_GRID(x, name, type) write_array((void*)x, name, 3, fdims_grid, \
-  fstart_grid, fcount_grid, mdims_grid, mstart_grid, type)
-#define WRITE_GRID_NO_GHOSTS(x, type) write_array((void*)x, #x, 3, fdims_grid, \
-  fstart_grid, fcount_grid, mdims_grid_noghost, mstart_grid_noghost, type)
-#define WRITE_PRIM(x, name, type) write_array((void*)x, name, 4, fdims_prim, \
-  fstart_prim, fcount_prim, mdims_prim, mstart_prim, type)
-#define WRITE_VEC(x, type) write_array((void*)x, #x, 4, fdims_vec, \
-  fstart_vec, fcount_vec, mdims_vec, mstart_vec, type)
-#define WRITE_VEC_NO_GHOSTS(x, type) \
-  write_array((void*)x, #x, 4, fdims_vec, \
-  fstart_vec, fcount_vec, mdims_vec_noghost, mstart_vec_noghost, type)
-#define WRITE_TENSOR(x, type) write_array((void*)x, #x, 5, fdims_tens, \
-  fstart_tens, fcount_tens, mdims_tens, mstart_tens, type)
-#define WRITE_TENSOR_NO_GHOSTS(x, type) \
-  write_array((void*)x, #x, 5, fdims_tens,				\
-  fstart_tens, fcount_tens, mdims_tens_noghost, mstart_tens_noghost, type)
-#define READ_ARRAY(x, rank, fdims, fstart, fcount, mdims, mstart, type) \
-  read_array((void*)x, #x, rank, fdims, fstart, fcount, mdims, mstart, type)
-#define READ_GRID(x, type) read_array((void*)x, #x, 3, fdims_grid, \
-  fstart_grid, fcount_grid, mdims_grid, mstart_grid, type)
-#define READ_PRIM(x, type) read_array((void*)x, #x, 4, fdims_prim, \
-  fstart_prim, fcount_prim, mdims_prim, mstart_prim, type)
-#define READ_VEC(x, type) read_array((void*)x, #x, 4, fdims_vec, \
-  fstart_vec, fcount_vec, mdims_vec, mstart_vec, type)
 
 hid_t file_id, plist_id;
 hid_t filespace, memspace;
@@ -173,7 +128,7 @@ const char vnams[NVAR][STRLEN] = {"RHO", "UU", "U1", "U2", "U3", "B1", "B2", "B3
 #else
 const char vnams[NVAR][STRLEN] = {"RHO", "UU", "U1", "U2", "U3", "B1", "B2", "B3"};
 #endif
-static char version[STRLEN];
+static char version[STRLEN], problem_name[STRLEN];
 static int dump_id = 0, restart_id = 0, restart_perm_id = 0, fdump_id = 0;
 static grid_double_type divb;
 
@@ -183,6 +138,7 @@ void init_io()
   strcpy(restartdir, "restarts/");
   strcpy(xmfdir, "xmf/");
   strcpy(version, VERSION);
+  strcpy(problem_name, PROBLEM_NAME);
   int len = strlen(outputdir);
   memmove(dumpdir+len, dumpdir, strlen(dumpdir)+1);
   memmove(restartdir+len, restartdir, strlen(restartdir)+1);
@@ -623,9 +579,16 @@ void dump()
   H5Pclose(plist_id);
 
   hdf5_set_directory("/");
-  hdf5_make_directory("header", file_id);
+  hdf5_make_directory("header");
   hdf5_set_directory("/header/");
- 
+
+  // write problem-specific information
+  hdf5_make_directory("problem");
+  hdf5_set_directory("/header/problem/");
+  write_scalar(problem_name, "id", TYPE_STR);
+  save_problem_params(file_id);
+
+  hdf5_set_directory("/header/");
   WRITE_HDR(version, TYPE_STR);
 
   #if RADIATION
@@ -660,7 +623,7 @@ void dump()
   WRITE_HDR(tp_over_te, TYPE_DBL);
   WRITE_HDR(Mbh, TYPE_DBL);
   hdf5_add_units("Mbh", "g", file_id);
-  hdf5_make_directory("units", file_id);
+  hdf5_make_directory("units");
   int maxnscatt = MAXNSCATT; WRITE_HDR(maxnscatt, TYPE_INT);
   int nubins_emiss = NU_BINS_EMISS; WRITE_HDR(nubins_emiss, TYPE_INT);
   WRITE_HDR(numin_emiss, TYPE_DBL);
@@ -697,7 +660,7 @@ void dump()
   hdf5_set_directory("/header/");
   #endif
 
-  hdf5_make_directory("geom", file_id);
+  hdf5_make_directory("geom");
   hdf5_set_directory("/header/geom/");
   double startx1 = startx[1]; WRITE_HDR(startx1, TYPE_DBL);
   double startx2 = startx[2]; WRITE_HDR(startx2, TYPE_DBL);
@@ -707,7 +670,7 @@ void dump()
   double dx3 = dx[3]; WRITE_HDR(dx3, TYPE_DBL);
   int n_dim = NDIM; WRITE_HDR(n_dim, TYPE_INT);
   #if METRIC == MKS
-  hdf5_make_directory("mks", file_id);
+  hdf5_make_directory("mks");
   hdf5_set_directory("/header/geom/mks/");
   double r_eh = Reh; WRITE_HDR(r_eh, TYPE_DBL);
   hdf5_add_units("r_eh", "code", file_id);
@@ -726,7 +689,7 @@ void dump()
   #endif
 
   #if METRIC == MMKS
-  hdf5_make_directory("mmks", file_id);
+  hdf5_make_directory("mmks");
   hdf5_set_directory("/header/geom/mmks/");
   double r_eh = Reh; WRITE_HDR(r_eh, TYPE_DBL);
   hdf5_add_units("r_eh", "code", file_id);
@@ -761,7 +724,7 @@ void dump()
   hdf5_add_units("full_dump_cadence", "code", file_id);
 
   hdf5_set_directory("/");
-  hdf5_make_directory("extras", file_id);
+  hdf5_make_directory("extras");
   hdf5_set_directory("/extras/");
   double r_out_vis = Rout_vis; WRITE_HDR(r_out_vis, TYPE_DBL);
   hdf5_add_units("r_out_vis", "code", file_id);
@@ -1398,13 +1361,13 @@ int restart_init()
   FILE *fp = fopen(lastname, "r");
   if (fp == NULL) {
     if (mpi_io_proc()) {
-      fprintf(stdout, "No restart file\n\n");
+      fprintf(stdout, "No restart file.\n");
     }
     return 0;
   }
 
   if (mpi_io_proc())
-    fprintf(stdout, "Loading restart file\n\n");
+    fprintf(stdout, "Loading restart file\n");
   zero_arrays();
 
   safe_fscanf(fp, "%s\n", fname);

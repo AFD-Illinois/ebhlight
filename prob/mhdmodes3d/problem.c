@@ -7,12 +7,17 @@
  ******************************************************************************/
 
 #include "decs.h"
+#include "io.h"
 #include <complex.h>
 
 static int nmode;
 void set_problem_params()
 {
   set_param("nmode", &nmode);
+}
+void save_problem_params() 
+{
+  WRITE_HDR(nmode, TYPE_INT);
 }
 
 void init_prob()

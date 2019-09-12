@@ -13,6 +13,9 @@ void set_problem_params()
 {
   //set_param("tscale", &tscale);
 }
+void save_problem_params()
+{
+}
 
 void init_prob()
 {

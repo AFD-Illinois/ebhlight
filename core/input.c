@@ -216,7 +216,7 @@ void read_params(char *pfname)
   #endif                                                                         
   
   if (mpi_io_proc()) {
-    fprintf(stderr, "Found %i,%i (required,optional) parameters, needed %i,%i.\n", 
+    fprintf(stderr, "Found %i,%i (required,optional) parameters, looked for %i,%i.\n", 
           nparamset-noptparamset, noptparamset, nparam-noptparam, noptparam);
     if (nparamset-noptparamset != nparam-noptparam && mpi_io_proc()) {
       fprintf(stderr, "! Incorrect number of required parameters set. Exiting.\n");
@@ -226,7 +226,7 @@ void read_params(char *pfname)
                                                                                  
   fclose(fp);                                                                    
                                                                                  
-  if (mpi_io_proc()) fprintf(stdout, "Parameter file read\n\n"); 
+  if (mpi_io_proc()) fprintf(stdout, "Parameter file read.\n\n"); 
 }
 
 void init_params(char *pfname)
