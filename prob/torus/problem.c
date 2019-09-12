@@ -315,9 +315,9 @@ void init_prob()
     if (mpi_nprocs() > 1) {
       if (mpi_io_proc())
         fprintf(stdout, "MPI nodes > 1: Using hard-coded loop normalization!\n");
-      //rstart = 2.335894e+01;
+      //rstart = 2.335894e+01;    // These numbers for (20,41)
       //rend = 3.737892e+02;
-      rstart = 1.175453e+01;
+      rstart = 1.175453e+01;    // These numbers for MEDIUM_DISK (10,20)
       rend = 8.362236e+01 ;
     } else {
       printf("rstart = %e rend = %e\n", rstart, rend);
