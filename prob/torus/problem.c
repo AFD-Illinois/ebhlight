@@ -10,8 +10,10 @@
 
 #define CLASSIC_BFIELD (0)
 #define LOW_FLUX (1)
+
+// Use this to test the native Fishbone-Moncrief 
+// torus. If (1), it will initialize the B^i:=0.
 #define NO_BFIELD (0)
-#define MEDIUM_DISK (0)
 
 // Local functions
 void coord_transform(double *Pr, int i, int j);
@@ -37,6 +39,8 @@ void set_problem_params()
  
   // set defaults for optional parameters
   u_jitter = 4.e-2;
+  rin = 20.;
+  rmax = 41.;
 }
 
 void init_prob()
@@ -44,16 +48,13 @@ void init_prob()
   double r, th, sth, cth, ur, uh, up, u, rho, X[NDIM];
   struct of_geom *geom;
 
-  printf(" we have %g %g %g\n", u_jitter, rin, rmax );
-
   // Disk interior
   double l, lnh, expm2chi, up1, DD, AA, SS, thin, sthin, cthin, DDin, AAin;
   double SSin, kappa, hm1;
 
   // Magnetic field
   static double A[N1+2*NG][N2+2*NG];
-  double rho_av, rhomax, umax, /*beta, */bsq_ij, bsq_max, q, Nloops;//, rstart;
-  //double rend;
+  double rho_av, rhomax, umax, bsq_ij, bsq_max, q, Nloops;
 
   // Fishbone-Moncrief parameters
   if (N3 == 1) {
@@ -65,15 +66,7 @@ void init_prob()
     DTd *= DTf;
     DTf = 1;
   } else {
-    rin = 20.;
-    rmax = 41;
     Nloops = 4;
-    #if MEDIUM_DISK
-    rin = 10.;
-    rmax = 20.;
-    #endif
-    //rin = 6.;
-    //rmax = 12.;
   }
 
   #if CLASSIC_BFIELD
@@ -81,7 +74,6 @@ void init_prob()
   rmax = 12.;
   #endif
 
-  printf("Nloops = %e\n", Nloops);
   l = lfish_calc(rmax);
   kappa = 1.e-3;
 
@@ -222,57 +214,60 @@ void init_prob()
 
 
 #if CLASSIC_BFIELD
-    // Normalize densities
-    ZSLOOP(-1, N1, -1, N2, -1, N3) {
-      P[i][j][k][RHO] /= rhomax;
-      P[i][j][k][UU] /= rhomax;
-    }
-    umax /= rhomax;
-    rhomax = 1.;
-    fixup(P);
-    bound_prim(P);
-    //return;
+  // Normalize densities
+  ZSLOOP(-1, N1, -1, N2, -1, N3) {
+    P[i][j][k][RHO] /= rhomax;
+    P[i][j][k][UU] /= rhomax;
+  }
+  umax /= rhomax;
+  rhomax = 1.;
+  fixup(P);
+  bound_prim(P);
+  //return;
 
-    // Find vector potential at corners
-    ZSLOOP(0, N1, 0, N2, 0, 0) A[i][j] = 0.;
-    ZSLOOP(0, N1, 0, N2, 0, 0) {
-      rho_av = 0.25*(P[i][j  ][0][RHO] + P[i-1][j  ][0][RHO] +
-                     P[i][j-1][0][RHO] + P[i-1][j-1][0][RHO]);
+  // Find vector potential at corners
+  ZSLOOP(0, N1, 0, N2, 0, 0) A[i][j] = 0.;
+  ZSLOOP(0, N1, 0, N2, 0, 0) {
+    rho_av = 0.25*(P[i][j  ][0][RHO] + P[i-1][j  ][0][RHO] +
+                   P[i][j-1][0][RHO] + P[i-1][j-1][0][RHO]);
 
-      coord(i, j, k, CORN, X);
-      bl_coord(X, &r, &th);
+    coord(i, j, k, CORN, X);
+    bl_coord(X, &r, &th);
 
-      q = rho_av/rhomax - 0.2;
-      if (q > 0.) A[i][j] = q;
-    }
+    q = rho_av/rhomax - 0.2;
+    if (q > 0.) A[i][j] = q;
+  }
 
-    // Differentiate to find cell-centered B, and begin normalization
-    bsq_max = 0.;
-    ZLOOP {
-      geom = get_geometry(i, j, k, CENT) ;
+  // Differentiate to find cell-centered B, and begin normalization
+  bsq_max = 0.;
+  ZLOOP {
+    geom = get_geometry(i, j, k, CENT) ;
 
-      // Flux-ct
-      P[i][j][k][B1] = -(A[i][j] - A[i][j+1] + A[i+1][j] - A[i+1][j+1])/
-                        (2.*dx[2]*geom->g);
-      P[i][j][k][B2] = (A[i][j] + A[i][j+1] - A[i+1][j] - A[i+1][j+1])/
-                       (2.*dx[1]*geom->g);
-      P[i][j][k][B3] = 0.;
+    // Flux-ct
+    P[i][j][k][B1] = -(A[i][j] - A[i][j+1] + A[i+1][j] - A[i+1][j+1])/
+                      (2.*dx[2]*geom->g);
+    P[i][j][k][B2] = (A[i][j] + A[i][j+1] - A[i+1][j] - A[i+1][j+1])/
+                     (2.*dx[1]*geom->g);
+    P[i][j][k][B3] = 0.;
 
-      bsq_ij = bsq_calc(P[i][j][k], geom);
-      if (bsq_ij > bsq_max) bsq_max = bsq_ij;
-    }
-    bsq_max = mpi_max(bsq_max);
+    bsq_ij = bsq_calc(P[i][j][k], geom);
+    if (bsq_ij > bsq_max) bsq_max = bsq_ij;
+  }
+  bsq_max = mpi_max(bsq_max);
 
-    // Normalize to set field strength
-    double beta_act = (gam-1.)*umax/(0.5*bsq_max);
-    double norm = sqrt(beta_act/beta);
-    ZLOOP {
-      P[i][j][k][B1] *= norm;
-      P[i][j][k][B2] *= norm;
-    }
+  // Normalize to set field strength
+  double beta_act = (gam-1.)*umax/(0.5*bsq_max);
+  double norm = sqrt(beta_act/beta);
+  ZLOOP {
+    P[i][j][k][B1] *= norm;
+    P[i][j][k][B2] *= norm;
+  }
 #else
   double rstart, rend;
   if (MAD == 0) {
+
+    fprintf(stderr, "Nloops = %e\n", Nloops);
+
     int rstart_set = 0, rend_set = 0;
     ZSLOOP(-1, N1, -1, N2, -1, N3) {
       P[i][j][k][RHO] /= rhomax;

@@ -60,6 +60,8 @@ bhl.config.set_cparm('X3R_RAD_BOUND', 'BC_PERIODIC')
 
 bhl.config.set_rparm('tf', 'double', default = 30001)
 bhl.config.set_rparm('dt', 'double', default = 1.e-6)
+bhl.config.set_rparm('rin', 'double', default = 20)     # MEDIUM_DISK 10
+bhl.config.set_rparm('rmax', 'double', default = 41)    # MEDIUM_DISK 20
 bhl.config.set_rparm('Rout', 'double', default = 1000.)
 bhl.config.set_rparm('Rout_rad', 'double', default = 40.)
 bhl.config.set_rparm('gam', 'double', default = 13./9.)
@@ -70,6 +72,7 @@ bhl.config.set_rparm('DNr', 'integer', default = 1000)
 bhl.config.set_rparm('a', 'double', default = 0.9375)
 bhl.config.set_rparm('mbh', 'double', default = 1.e8)
 bhl.config.set_rparm('M_unit', 'double', default = 8.e23)
+bhl.config.set_rparm('u_jitter', 'double', default = 0.04)
 bhl.config.set_rparm('tune_emiss', 'double', 1.0)
 bhl.config.set_rparm('tune_scatt', 'double', 0.1)
 bhl.config.set_rparm('t0_tune_emiss', 'double', 500)
