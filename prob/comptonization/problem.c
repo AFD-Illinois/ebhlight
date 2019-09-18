@@ -12,6 +12,9 @@
 void set_problem_params()
 {
 }
+void save_problem_params()
+{
+}
 
 // Initialize dynamical variables
 void init_prob()

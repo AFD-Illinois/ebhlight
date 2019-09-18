@@ -12,21 +12,34 @@
 struct param {
   char *key;
   void *data;
+  int required;
 };
 
 #define MAXPARAMS (1000)
 static struct param table[MAXPARAMS];
 static int nparam = 0;
+static int noptparam = 0;
 static int nparamset = 0;
+static int noptparamset = 0;
+
+void set_param_optional(char *key, void *data)
+{
+  table[nparam].key = key;
+  table[nparam].data = data;
+  table[nparam].required = 0;
+  nparam++;
+  noptparam++;
+}
 
 void set_param(char *key, void *data)
 {
   table[nparam].key = key;
   table[nparam].data = data;
+  table[nparam].required = 1;
   nparam++;
 }
 
-int get_param(char *key, void **data)
+int get_param(char *key, void **data, int *req)
 {
   int n = 0;
   while (strncmp(key, table[n].key, strlen(key)) != 0) {
@@ -37,6 +50,7 @@ int get_param(char *key, void **data)
     }
   }
   *data = table[n].data;
+  *req = table[n].required;
 
   return 1;
 }
@@ -170,25 +184,29 @@ void read_params(char *pfname)
     }                                                                            
                                                                                  
     // Read in parameter depending on datatype                                   
+    int req = 0;
     char type[6];                                                                
     strncpy(type, line, 5);                                                      
     type[5] = 0;                                                                 
-    if (get_param(key, &ptr)) {                                                  
+    if (get_param(key, &ptr, &req)) {
       if (!strncmp(type, "[int]", 5)) {                                          
         int buf;                                                                 
         sscanf(line, "%*s %s %*s %d", key, &buf);                                
         *((int*)ptr) = buf;                                                      
         nparamset++;                                                             
+        if (req == 0) noptparamset++;
       } else if (!strncmp(type, "[dbl]", 5)) {                                   
         double buf;                                                              
         sscanf(line, "%*s %s %*s %lf", key, &buf);                               
         *((double*)ptr) = buf;                                                   
         nparamset++;                                                             
+        if (req == 0) noptparamset++;
       } else if (!strncmp(type, "[str]", 5)) {                                   
         char buf[STRLEN];                                                        
         sscanf(line, "%*s %s %*s %s", key, buf);                                 
         strcpy((char*)ptr, buf);                                                 
         nparamset++;                                                             
+        if (req == 0) noptparamset++;
       }                                                                          
     }                                                                            
   }
@@ -196,15 +214,19 @@ void read_params(char *pfname)
   #if (METRIC == MKS || METRIC == MMKS) && RADIATION                                               
   Mbh = mbh*MSUN;                                                                
   #endif                                                                         
-                                                                                 
-  if (nparamset != nparam && mpi_io_proc()) {                                    
-    fprintf(stderr, "Set %i parameters, needed %i!\n", nparamset, nparam);       
-    exit(-1);                                                                    
+  
+  if (mpi_io_proc()) {
+    fprintf(stderr, "Found %i,%i (required,optional) parameters, looked for %i,%i.\n", 
+          nparamset-noptparamset, noptparamset, nparam-noptparam, noptparam);
+    if (nparamset-noptparamset != nparam-noptparam && mpi_io_proc()) {
+      fprintf(stderr, "! Incorrect number of required parameters set. Exiting.\n");
+      exit(-1);
+    }
   }                                                                              
                                                                                  
   fclose(fp);                                                                    
                                                                                  
-  if (mpi_io_proc()) fprintf(stdout, "Parameter file read\n\n"); 
+  if (mpi_io_proc()) fprintf(stdout, "Parameter file read.\n\n"); 
 }
 
 void init_params(char *pfname)

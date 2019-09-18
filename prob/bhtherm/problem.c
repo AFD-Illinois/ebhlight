@@ -12,7 +12,11 @@
 
 double *r_init, *P_cgs_init, *rho_cgs_init;
 
-void set_problem_params() {
+void set_problem_params() 
+{ 
+}
+void save_problem_params() 
+{ 
 }
 
 void init_zone_thermal(int i, int j, int k, double dndlnu[NU_BINS_EMISS+1]);

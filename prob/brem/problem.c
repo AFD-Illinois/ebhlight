@@ -8,11 +8,17 @@
 
 #include "decs.h"
 
+#include "io.h"
+
 // Problem-specific variables to set at runtime
 static double T0;
 void set_problem_params()
 {
   set_param("T0", &T0);
+}
+void save_problem_params()
+{
+  WRITE_HDR(T0, TYPE_DBL);
 }
 
 void init_prob()
