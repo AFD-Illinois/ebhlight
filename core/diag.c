@@ -382,13 +382,13 @@ void record_superphoton(double X[NDIM], struct of_photon *ph)
   double nu = -ph->Kcov[2][0]*ME*CL*CL/HPL;
 
   int thbin, phibin, nubin = (log(nu) - lnumin)/dlnu;
-  get_nuLnu_bin(X, &thbin, &phibin);
+  double dOmega = get_nuLnu_bin(X, &thbin, &phibin);
 
   // Store dE / dlognu dOmega dt
   if (nubin >= 0 && nubin < NU_BINS_SPEC) {
     #pragma omp atomic
     nuLnu[nscatt][thbin][phibin][nubin] -= ph->w*ph->Kcov[2][0]*ME*CL*CL/
-                                  (dlnu*DTd*T_unit);
+                                  (dlnu*DTd*T_unit) * 4.*M_PI / dOmega;
     #pragma omp atomic
     step_rec++;
   }

@@ -637,7 +637,7 @@ int push_to_X_K(double t, struct of_photon *ph, double X[NDIM],
   double Kcov[NDIM], double Kcon[NDIM]);
 int to_be_pushed(double t, double dt, struct of_photon *ph);
 void swap_ph(struct of_photon **donor, struct of_photon **recipient);
-void get_nuLnu_bin(double X[NDIM], int *thbin, int *phibin);
+double get_nuLnu_bin(double X[NDIM], int *thbin, int *phibin);
 #endif
 
 // radiation.c

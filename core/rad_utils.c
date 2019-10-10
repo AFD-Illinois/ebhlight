@@ -480,7 +480,7 @@ void set_Rmunu()
 	} // omp parallel
 }
 
-void get_nuLnu_bin(double X[NDIM], int *thbin, int *phibin)
+double get_nuLnu_bin(double X[NDIM], int *thbin, int *phibin)
 {
   double r, th, phi;
   bl_coord(X, &r, &th); 
@@ -492,6 +492,10 @@ void get_nuLnu_bin(double X[NDIM], int *thbin, int *phibin)
 
   *thbin = (int)(phi/dphi);
   *phibin = (int)(th/dth);
+
+  return 2.*M_PI*(-cos((*thbin+1)*dth) + cos((*thbin)*dth)) / NPHI;
+
 }
+
 #endif // RADIATION
 
