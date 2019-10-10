@@ -490,8 +490,8 @@ double get_nuLnu_bin(double X[NDIM], int *thbin, int *phibin)
   double dth = M_PI/NTH;
   double dphi = 2.*M_PI/NPHI;
 
-  *thbin = (int)(phi/dphi);
-  *phibin = (int)(th/dth);
+  *thbin = (int)(th/dth);
+  *phibin = (int)(phi/dphi);
 
   return 2.*M_PI*(-cos((*thbin+1)*dth) + cos((*thbin)*dth)) / NPHI;
 
