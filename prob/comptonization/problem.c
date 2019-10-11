@@ -55,7 +55,7 @@ void init_prob()
       make_tetrad(i, j, k, Ucon, Bcon, ggeom[i][j][CENT].gcov, Econ, Ecov);
 
       for (int n = 0; n < Nr0/(N1*N2*N3*nthreads); n++) {
-        struct of_photon *phadd = safe_malloc(sizeof(struct of_photon));
+        struct of_photon *phadd = safe_malloc(1, sizeof(struct of_photon));
 
         phadd->X[2][0] = 0.;
         for (int mu = 1; mu < NDIM; mu++) {

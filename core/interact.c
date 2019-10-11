@@ -243,7 +243,7 @@ void interact(grid_prim_type P, double t, double dt)
             break;
           }
 
-          struct of_photon *phscatt = safe_malloc(sizeof(struct of_photon));
+          struct of_photon *phscatt = safe_malloc(1, sizeof(struct of_photon));
 
           if (get_rand() < Nph_to_track/(nph_per_proc*mpi_nprocs())) {
             phscatt->is_tracked = 1;
