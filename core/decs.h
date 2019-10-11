@@ -696,7 +696,7 @@ void report_performance();
 void timers_reset();
 
 // utils.c
-void *safe_malloc(int size);
+void *safe_malloc(size_t num, size_t size);
 void safe_system(const char *command);
 void safe_fscanf(FILE *stream, const char *format, ...);
 

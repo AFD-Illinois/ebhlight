@@ -29,9 +29,9 @@ void init_prob()
   fgets(buf, STRLEN, infil);
   int nsup;
   sscanf(buf, "%d", &nsup);
-  r_init = safe_malloc(nsup*sizeof(double));
-  P_cgs_init = safe_malloc(nsup*sizeof(double));
-  rho_cgs_init = safe_malloc(nsup*sizeof(double));
+  r_init = safe_malloc(nsup, sizeof(double));
+  P_cgs_init = safe_malloc(nsup, sizeof(double));
+  rho_cgs_init = safe_malloc(nsup, sizeof(double));
   int n = 0;
   while (fgets(buf, STRLEN, infil) != NULL) {
     sscanf(buf, "%lf %lf %lf\n", &r_init[n], &P_cgs_init[n], &rho_cgs_init[n]);
@@ -131,8 +131,8 @@ void init_prob()
     struct of_photon *tmp[2];
     double sth[2], cth[2], sphi[2], cphi[2], phi, K_tetrad[NDIM];
     for (int m = 0; m < photons_per_zone; m++) {
-      tmp[0] = safe_malloc(sizeof(struct of_photon));
-      tmp[1] = safe_malloc(sizeof(struct of_photon));
+      tmp[0] = safe_malloc(1, sizeof(struct of_photon));
+      tmp[1] = safe_malloc(1, sizeof(struct of_photon));
       tmp[0]->next = tmp[1];
       tmp[1]->next = ph;
       ph = tmp[0];
