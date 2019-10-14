@@ -216,7 +216,7 @@ void interact(grid_prim_type P, double t, double dt)
           
           // du_e / dtau
           #pragma omp atomic
-          Jrad[1][i][j][k] += dot(Ucon_grid[i][j][k], Gcov);
+          Jrad[1][i][j][k] += dot(Ucon_grid[i][j][k], Gcov) * dt/DTd;
 
           step_abs_local++;
 
@@ -307,7 +307,7 @@ void interact(grid_prim_type P, double t, double dt)
           // du_e / dtau
           int nscatt = MY_MIN(ph->nscatt, MAXNSCATT - 1);
           #pragma omp atomic
-          Jrad[nscatt+2][i][j][k] += dot(Ucon_grid[i][j][k], Gcov);
+          Jrad[nscatt+2][i][j][k] += dot(Ucon_grid[i][j][k], Gcov) * dt/DTd;
           
           //push phscatt as far as possible
           status = push_superphoton(phscatt, cour*dt_light[i][j]);

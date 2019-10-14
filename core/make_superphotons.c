@@ -202,7 +202,7 @@ void sample_photon(int i, int j, int k, double t, double dt,
 
     // du_e / dtau
     #pragma omp atomic
-    Jrad[0][i][j][k] -= dot(Ucon, Gcov) * dt / DTd;
+    Jrad[0][i][j][k] -= dot(Ucon, Gcov) * dt/DTd;
 
     #pragma omp atomic
     Nem[i][j][k] += 1;
