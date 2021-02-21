@@ -28,7 +28,6 @@ grid_double_type nph;
 struct of_photon **photon_lists;
 struct of_photon **photon_mpi_lists;
 double nuLnu[MAXNSCATT+1][NTH][NPHI][NU_BINS_SPEC];
-//double dOmega[N2+2*NG][N3+2*NG];
 double Jrad[MAXNSCATT+2][N1+2*NG][N2+2*NG][N3+2*NG];
 double Jrad_buf[MAXNSCATT+2][N1+2*NG][N2+2*NG][N3+2*NG];
 grid_int_type Nem, Nabs, Nsc;

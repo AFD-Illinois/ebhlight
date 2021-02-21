@@ -70,8 +70,8 @@ void make_superphotons(grid_prim_type Prad, double t, double dt)
 
         // Create superphotons in pairs
         for (int n = 0; n < nz; n++) {
-          tmp = safe_malloc(sizeof(struct of_photon));
-          tmp->next = safe_malloc(sizeof(struct of_photon));
+          tmp = safe_malloc(1, sizeof(struct of_photon));
+          tmp->next = safe_malloc(1, sizeof(struct of_photon));
 
           sample_photon(i, j, k, t, dt, dndlnu, tmp, Econ, Ecov, &m, Bcon, Ucon);
 
@@ -202,7 +202,7 @@ void sample_photon(int i, int j, int k, double t, double dt,
 
     // du_e / dtau
     #pragma omp atomic
-    Jrad[0][i][j][k] -= dot(Ucon, Gcov);
+    Jrad[0][i][j][k] -= dot(Ucon, Gcov) * dt/DTd;
 
     #pragma omp atomic
     Nem[i][j][k] += 1;

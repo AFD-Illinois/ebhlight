@@ -276,7 +276,7 @@ void track_ph()
 
   // Create buffer for output
   struct of_track_photon *io_track = safe_malloc(
-    num_tracked*sizeof(struct of_track_photon));
+    num_tracked, sizeof(struct of_track_photon));
   int nio = 0;
   double X[NDIM], Kcov[NDIM], Kcon[NDIM];
   for (int n = 0; n < nthreads; n++) {
@@ -309,7 +309,7 @@ void track_ph()
     H5Pclose(plist_id);
 
     // One dataset per processor; each processor must create all datasets
-    hid_t *ph_dsets = safe_malloc(mpi_nprocs()*sizeof(hid_t));
+    hid_t *ph_dsets = safe_malloc(mpi_nprocs(), sizeof(hid_t));
     for (int n = 0; n < mpi_nprocs(); n++) {
       char dsetnam[STRLEN];
       sprintf(dsetnam, "trackph_%08d", n);
@@ -360,7 +360,7 @@ void dump_grid()
   H5Pclose(plist_id);
 
   {
-    double *Xharm = safe_malloc(N1*N2*N3*NDIM*sizeof(double));
+    double *Xharm = safe_malloc(N1*N2*N3*NDIM, sizeof(double));
     int n = 0;
     ZLOOP
     {
@@ -372,7 +372,7 @@ void dump_grid()
   }
 
   { // If metric == Minkowski, then Xcart == Xharm
-    double *Xcart = safe_malloc(N1*N2*N3*NDIM*sizeof(double));
+    double *Xcart = safe_malloc(N1*N2*N3*NDIM, sizeof(double));
     double X[NDIM],Xcart_loc[NDIM];
     int n = 0;
     ZLOOP {
@@ -399,8 +399,8 @@ void dump_grid()
     }
     hsize_t mstart[RANK] = {0, 0, 0, 0};
     hsize_t memsize_tot = product_hsize_t(mdims, RANK);
-    double *XFharm = safe_malloc(memsize_tot*sizeof(double));
-    double *XFcart = safe_malloc(memsize_tot*sizeof(double));
+    double *XFharm = safe_malloc(memsize_tot, sizeof(double));
+    double *XFcart = safe_malloc(memsize_tot, sizeof(double));
     double X[NDIM], Xcart_loc[NDIM];
     int n = 0;
     ZSLOOP(0, mdims[0]-1, 0, mdims[1]-1, 0, mdims[2]-1) {
@@ -421,7 +421,7 @@ void dump_grid()
 
   #if METRIC == MKS || METRIC == MMKS
   {
-    double *Xbl = safe_malloc(N1*N2*N3*NDIM*sizeof(double));
+    double *Xbl = safe_malloc(N1*N2*N3*NDIM, sizeof(double));
     int n = 0;
     ZLOOP
     {
@@ -439,7 +439,7 @@ void dump_grid()
   #endif
 
   {
-    double *gcov = safe_malloc(N1*N2*N3*NDIM*NDIM*sizeof(double));
+    double *gcov = safe_malloc(N1*N2*N3*NDIM*NDIM, sizeof(double));
     int n = 0;
     ZLOOP {
       DLOOP2 {
@@ -452,7 +452,7 @@ void dump_grid()
   }
 
   {
-    double *gcon = safe_malloc(N1*N2*N3*NDIM*NDIM*sizeof(double));
+    double *gcon = safe_malloc(N1*N2*N3*NDIM*NDIM, sizeof(double));
     int n = 0;
     ZLOOP {
       DLOOP2 {
@@ -465,7 +465,7 @@ void dump_grid()
   }
 
   {
-    double *gdet = safe_malloc(N1*N2*N3*sizeof(double));
+    double *gdet = safe_malloc(N1*N2*N3, sizeof(double));
     int n = 0;
     ZLOOP {
       gdet[n] = ggeom[i][j][CENT].g;
@@ -476,7 +476,7 @@ void dump_grid()
   }
 
   {
-    double *alpha = safe_malloc(N1*N2*N3*sizeof(double));
+    double *alpha = safe_malloc(N1*N2*N3, sizeof(double));
     int n = 0;
     ZLOOP {
       alpha[n] = ggeom[i][j][CENT].alpha;
@@ -491,8 +491,8 @@ void dump_grid()
     double X[NDIM];
     double Lambda_con_local[NDIM][NDIM];
     double Lambda_cov_local[NDIM][NDIM];
-    double *Lambda_h2bl_con = safe_malloc(N1*N2*N3*NDIM*NDIM*sizeof(double));
-    double *Lambda_h2bl_cov = safe_malloc(N1*N2*N3*NDIM*NDIM*sizeof(double));
+    double *Lambda_h2bl_con = safe_malloc(N1*N2*N3*NDIM*NDIM, sizeof(double));
+    double *Lambda_h2bl_cov = safe_malloc(N1*N2*N3*NDIM*NDIM, sizeof(double));
     int n = 0;
     ZLOOP {
       coord(i, j, k, CENT, X);
@@ -513,8 +513,8 @@ void dump_grid()
     double X[NDIM];
     double Lambda_con_local[NDIM][NDIM];
     double Lambda_cov_local[NDIM][NDIM];
-    double *Lambda_bl2cart_con = safe_malloc(N1*N2*N3*NDIM*NDIM*sizeof(double));
-    double *Lambda_bl2cart_cov = safe_malloc(N1*N2*N3*NDIM*NDIM*sizeof(double));
+    double *Lambda_bl2cart_con = safe_malloc(N1*N2*N3*NDIM*NDIM, sizeof(double));
+    double *Lambda_bl2cart_cov = safe_malloc(N1*N2*N3*NDIM*NDIM, sizeof(double));
     int n = 0;
     ZLOOP {
       coord(i, j, k, CENT, X);
@@ -536,8 +536,8 @@ void dump_grid()
     double X[NDIM];
     double Lambda_con_local[NDIM][NDIM];
     double Lambda_cov_local[NDIM][NDIM];
-    double *Lambda_h2cart_con = safe_malloc(N1*N2*N3*NDIM*NDIM*sizeof(double));
-    double *Lambda_h2cart_cov = safe_malloc(N1*N2*N3*NDIM*NDIM*sizeof(double));
+    double *Lambda_h2cart_con = safe_malloc(N1*N2*N3*NDIM*NDIM, sizeof(double));
+    double *Lambda_h2cart_cov = safe_malloc(N1*N2*N3*NDIM*NDIM, sizeof(double));
     int n = 0;
     ZLOOP {
       coord(i, j, k, CENT, X);
@@ -1004,7 +1004,7 @@ void restart_write(int restart_type)
     hid_t space;
     char dsetnam[STRLEN];
     struct of_photon *wdata;
-    wdata = safe_malloc(step_tot*sizeof(struct of_photon));
+    wdata = safe_malloc(step_tot, sizeof(struct of_photon));
 
     // Copy superphotons into buffer
     int nph = 0;
@@ -1018,7 +1018,7 @@ void restart_write(int restart_type)
     }
 
     // Each processor must create all datasets
-    hid_t *ph_dsets = safe_malloc(mpi_nprocs()*sizeof(hid_t));
+    hid_t *ph_dsets = safe_malloc(mpi_nprocs(), sizeof(hid_t));
     for (int n = 0; n < mpi_nprocs(); n++) {
       sprintf(dsetnam, "photons_%08d", n);
       //int step_tot_buf = step_tot;
@@ -1214,7 +1214,7 @@ void restart_read(char *fname)
   // Superphoton datasets -- each processor must create all datasets
   hsize_t dims[1];
   int nph_in = 0;
-  hid_t *ph_dsets = safe_malloc(mpi_nprocs()*sizeof(hid_t));
+  hid_t *ph_dsets = safe_malloc(mpi_nprocs(), sizeof(hid_t));
   char dsetnam[STRLEN];
   for (int n = 0; n < mpi_nprocs(); n++) {
     sprintf(dsetnam, "photons_%08d", n);
@@ -1225,7 +1225,7 @@ void restart_read(char *fname)
     H5Sclose(space);
   }
   
-  struct of_photon *rdata = safe_malloc(nph_in*sizeof(struct of_photon));
+  struct of_photon *rdata = safe_malloc(nph_in, sizeof(struct of_photon));
   if (nph_in > 0) {
     H5Dread(ph_dsets[mpi_myrank()], phmemtype, H5S_ALL, H5S_ALL, H5P_DEFAULT,
       rdata);
@@ -1477,7 +1477,7 @@ void write_array(void *data, const char *name, hsize_t rank,
     for (int n = 0; n < rank; n++) {
       ntot *= mdims[n];
     }
-    float *buf = safe_malloc(ntot*sizeof(float));
+    float *buf = safe_malloc(ntot, sizeof(float));
     for (int n = 0; n < ntot; n++) {
       buf[n] = (float)(((double*)data)[n]);
     }

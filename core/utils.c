@@ -8,8 +8,10 @@
 
 #include "decs.h"
 
-void *safe_malloc(int size)
+void *safe_malloc(size_t num, size_t size)
 {
+  size *= num;
+
   // malloc(0) may or may not return NULL, depending on compiler.
   if (size == 0) return NULL;
 
