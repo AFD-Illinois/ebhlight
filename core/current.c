@@ -46,26 +46,26 @@ void current_calc()
 
     // X0
     for (int mu = 0; mu < NDIM; mu++) {
-      gF0p[mu] = Fcon_calc(P[i][j][k],  0, mu, i, j, k);
-      gF0m[mu] = Fcon_calc(Psave[i][j][k], 0, mu, i, j, k);
+      gF0p[mu] = Fcon_calc(P[i][j][k],  mu, 0, i, j, k);
+      gF0m[mu] = Fcon_calc(Psave[i][j][k], mu, 0, i, j, k);
     }
 
     // X1
     for (int mu = 0; mu < NDIM; mu++) {
-      gF1p[mu] = Fcon_calc(Pa[i+1][j][k],  1, mu, i+1, j, k);
-      gF1m[mu] = Fcon_calc(Pa[i-1][j][k], 1, mu, i-1, j, k);
+      gF1p[mu] = Fcon_calc(Pa[i+1][j][k], mu, 1, i+1, j, k);
+      gF1m[mu] = Fcon_calc(Pa[i-1][j][k], mu, 1, i-1, j, k);
     }
 
     // X2
     for (int mu = 0; mu < NDIM; mu++) {
-      gF2p[mu] = Fcon_calc(Pa[i][j+1][k],  2, mu, i, j+1, k);
-      gF2m[mu] = Fcon_calc(Pa[i][j-1][k], 2, mu, i, j-1, k);
+      gF2p[mu] = Fcon_calc(Pa[i][j+1][k], mu, 2, i, j+1, k);
+      gF2m[mu] = Fcon_calc(Pa[i][j-1][k], mu, 2, i, j-1, k);
     }
 
     // X3
     for (int mu = 0; mu < NDIM; mu++) {
-      gF3p[mu] = Fcon_calc(Pa[i][j][k+1],  3, mu, i, j, k+1);
-      gF3m[mu] = Fcon_calc(Pa[i][j][k-1], 3, mu, i, j, k-1);
+      gF3p[mu] = Fcon_calc(Pa[i][j][k+1], mu, 3, i, j, k+1);
+      gF3m[mu] = Fcon_calc(Pa[i][j][k-1], mu, 3, i, j, k-1);
     }
 
     // Difference: D_mu F^{mu nu} = 4 \pi j^nu
